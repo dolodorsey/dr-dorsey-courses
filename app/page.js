@@ -1,406 +1,462 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
-const STRIPE={lifestyle_pass_monthly:'price_1TIJHtKUVDzsdWUxSHmG8MIY',lifestyle_pass_annual:'price_1TIJHuKUVDzsdWUxK7S8Qy6A',operator_monthly:'price_1TIJIbKUVDzsdWUxQd9TWNHo',operator_annual:'price_1TIJIbKUVDzsdWUx7qpwotgk',inner_circle_monthly:'price_1TIJIbKUVDzsdWUx5QPHt9N2',inner_circle_annual:'price_1TIJIcKUVDzsdWUxrV9cxWMq',event_money_machine:'price_1TIJIcKUVDzsdWUxlLoXpTQ8',nightlife_money:'price_1TIJIdKUVDzsdWUxz5ezooe4',lifestyle_specialist:'price_1TIJIeKUVDzsdWUx2FQYkyeB',automate_biz_os:'price_1TIJIgKUVDzsdWUxptHr3Qk8',founder_empire:'price_1TIJIhKUVDzsdWUxvnxipPG9',culture_ecom:'price_1TIJIfKUVDzsdWUxXpcYgQml',restaurant_qsr:'price_1TIJIiKUVDzsdWUxsikwYU6p',audience_to_income:'price_1TIJIjKUVDzsdWUxfrNM0I72',strategy_call:'price_1TIJJ1KUVDzsdWUx9aJVErFU',brand_audit:'price_1TIJJ2KUVDzsdWUxOJhlreiJ',full_day:'price_1TIJJ2KUVDzsdWUxccLV6EgK',retainer:'price_1TIJJ3KUVDzsdWUxIesNwBy3'}
-const SB='https://dzlmtvodpyhetvektfuo.supabase.co/storage/v1/object/public/brand-graphics/dr_dorsey/website'
+const STRIPE = {
+  lifestyle_pass_monthly:'price_1TIJHtKUVDzsdWUxSHmG8MIY',lifestyle_pass_annual:'price_1TIJHuKUVDzsdWUxK7S8Qy6A',
+  operator_monthly:'price_1TIJIbKUVDzsdWUxQd9TWNHo',operator_annual:'price_1TIJIbKUVDzsdWUx7qpwotgk',
+  inner_circle_monthly:'price_1TIJIbKUVDzsdWUx5QPHt9N2',inner_circle_annual:'price_1TIJIcKUVDzsdWUxrV9cxWMq',
+  event_money_machine:'price_1TIJIcKUVDzsdWUxlLoXpTQ8',nightlife_money:'price_1TIJIdKUVDzsdWUxz5ezooe4',
+  lifestyle_specialist:'price_1TIJIeKUVDzsdWUx2FQYkyeB',culture_ecom:'price_1TIJIfKUVDzsdWUxXpcYgQml',
+  automate_biz_os:'price_1TIJIgKUVDzsdWUxptHr3Qk8',founder_empire:'price_1TIJIhKUVDzsdWUxvnxipPG9',
+  restaurant_qsr_blueprint:'price_1TIJIiKUVDzsdWUxsikwYU6p',audience_to_income:'price_1TIJIjKUVDzsdWUxfrNM0I72',
+  service_scale_blueprint:'price_1TIJIkKUVDzsdWUxS928s5Y4',app_launch_blueprint:'price_1TIJIlKUVDzsdWUxRY6X6Ybh',
+  experience_blueprint:'price_1TIJImKUVDzsdWUxIcYpgAQ3',brand_monetization:'price_1TIJInKUVDzsdWUxvGh8DxZT',
+  ai_operator:'price_1TIJIoKUVDzsdWUx9ez8Pb7B',offer_architecture:'price_1TIJIpKUVDzsdWUxhM9FdtAq',
+  venue_revenue:'price_1TIJIqKUVDzsdWUxAbzwS9Vo',content_authority:'price_1TIJIrKUVDzsdWUxXQVBEsBM',
+  merch_moves:'price_1TIJIrKUVDzsdWUxQDdIa9pN',menu_engineering:'price_1TIJIsKUVDzsdWUx0XBi7r9z',
+  dayparty_launch:'price_1TIJItKUVDzsdWUxDwkwJHtn',sponsor_sales:'price_1TIJIuKUVDzsdWUx5cljIaNZ',
+  shopify_drop_systems:'price_1TIJIvKUVDzsdWUxA0nkZKnW',sop_builder:'price_1TIJIwKUVDzsdWUxdhjFGMOl',
+  authority_design:'price_1TIJIxKUVDzsdWUxBpkDMfeR',vip_experience:'price_1TIJIyKUVDzsdWUx6jjoO3vY',
+  hospitality_brand_builder:'price_1TIJIzKUVDzsdWUxUq5Izjiz',crm_followup:'price_1TIJJ0KUVDzsdWUxk8RAX83L',
+  strategy_call:'price_1TIJJ1KUVDzsdWUx9aJVErFU',brand_audit:'price_1TIJJ2KUVDzsdWUxOJhlreiJ',
+  full_day:'price_1TIJJ2KUVDzsdWUxccLV6EgK',retainer:'price_1TIJJ3KUVDzsdWUxIesNwBy3',
+}
 
-export default function Home(){
-  const[buying,setBuying]=useState(null)
-  const[bc,setBc]=useState('monthly')
-  const[fd,setFd]=useState({name:'',email:'',phone:'',industry:''})
-  const[sent,setSent]=useState(false)
-  const[sub,setSub]=useState(false)
-  const[menuOpen,setMenuOpen]=useState(false)
+const SB = 'https://dzlmtvodpyhetvektfuo.supabase.co/storage/v1/object/public/brand-graphics/dr_dorsey/website'
 
-  useEffect(()=>{
-    const pl=document.getElementById('pl')
-    if(pl)setTimeout(()=>{pl.style.opacity='0';pl.style.visibility='hidden';pl.style.pointerEvents='none'},2600)
-    const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis')}})},{threshold:.1})
-    document.querySelectorAll('.rv').forEach(el=>obs.observe(el))
-    return()=>obs.disconnect()
-  },[])
+const PILLARS = [
+  { icon: '\u25C7', title: 'Business & Ownership', desc: 'Build enterprises that generate real wealth' },
+  { icon: '\u25C8', title: 'Brand & Influence', desc: 'Craft brands that command attention and trust' },
+  { icon: '\u25C6', title: 'Lifestyle & Power', desc: 'Design a life that reflects your ambition' },
+  { icon: '\u2699', title: 'Systems & Automation', desc: 'Scale with AI, SOPs, and operator intelligence' },
+]
 
-  const checkout=async(sk,mode='payment')=>{setBuying(sk);try{const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({priceId:STRIPE[sk],mode,programKey:sk})});const d=await r.json();if(d.url)window.location.href=d.url}catch(e){console.error(e)};setBuying(null)}
-  const doSubmit=async e=>{e.preventDefault();setSub(true);try{await fetch('/api/enroll',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fd)});setSent(true)}catch(e){console.error(e)};setSub(false)}
+const SCHOOLS = [
+  { name:'Experience Economy', flagship:'Event Money Machine', sk:'event_money_machine', price:'$1,997', desc:'Launch, scale, and monetize events. Built from running 15+ event brands.', img:'thesis-bg.jpg' },
+  { name:'Hospitality & Nightlife', flagship:'Nightlife Money Machine', sk:'nightlife_money', price:'$1,997', desc:'Build profitable nightlife brands and venue partnerships.', img:'rooftop-lounge.jpg' },
+  { name:'Personal Brand', flagship:'Lifestyle Specialist Blueprint', sk:'lifestyle_specialist', price:'$1,997', desc:'Turn your expertise and attention into scalable income.', img:'hero-bg.jpg' },
+  { name:'Automation & Systems', flagship:'Automate Your Business OS', sk:'automate_biz_os', price:'$2,497', desc:'Build the AI-powered operating system behind a real enterprise.', img:'luxury-venue.jpg' },
+  { name:'Food Brand Launch', flagship:'Restaurant & QSR Blueprint', sk:'restaurant_qsr_blueprint', price:'$1,997', desc:'Launch restaurants, food trucks, and QSR concepts that scale.', img:'penthouse-skyline.jpg' },
+  { name:'Audience Growth', flagship:'Audience to Income System', sk:'audience_to_income', price:'$1,497', desc:'Grow organically and convert followers into revenue.', img:'garden-district.jpg' },
+  { name:'Merch & E-Commerce', flagship:'Culture Brand E-Commerce', sk:'culture_ecom', price:'$1,997', desc:'Build culture-first e-commerce brands on Shopify.', img:'thesis-bg.jpg' },
+  { name:'Service Business', flagship:'Service Business Scale', sk:'service_scale_blueprint', price:'$1,497', desc:'Package expertise into offers that attract premium clients.', img:'luxury-venue.jpg' },
+  { name:'App Launch', flagship:'App Launch Blueprint', sk:'app_launch_blueprint', price:'$1,497', desc:'Go from idea to App Store without burning capital.', img:'hero-bg.jpg' },
+  { name:'Venue Development', flagship:'Venue Revenue Blueprint', sk:'venue_revenue', price:'$497', desc:'Program and monetize physical spaces for maximum revenue.', img:'rooftop-lounge.jpg' },
+]
 
-  return(<>
-    <style jsx global>{`
-      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap');
-      *{margin:0;padding:0;box-sizing:border-box}
-      html{scroll-behavior:smooth}
-      body{background:#0A0806;color:#F2EBE0;font-family:'DM Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-      ::selection{background:#C9A84C;color:#0A0806}
+const PROGRAMS = [
+  { name:'Event Money Machine', sk:'event_money_machine', price:'$1,997', cat:'Business & Ownership' },
+  { name:'Nightlife Money Machine', sk:'nightlife_money', price:'$1,997', cat:'Lifestyle & Power' },
+  { name:'Lifestyle Specialist', sk:'lifestyle_specialist', price:'$1,997', cat:'Brand & Influence' },
+  { name:'Automate Your Business OS', sk:'automate_biz_os', price:'$2,497', cat:'Systems & Automation' },
+]
 
-      /* Grain overlay */
-      .grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.3;
-        background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")}
+const TIERS = [
+  { name:'The Taste', price:'FREE', annual:null, sm:null, sa:null, features:['1 mini-lesson per school','Weekly newsletter','Public community','Free training library'], cta:'Start Free' },
+  { name:'Lifestyle Pass', price:'$29/mo', annual:'$249/yr', sm:'lifestyle_pass_monthly', sa:'lifestyle_pass_annual', features:['Full course library','Monthly live Q&A','Community access','Templates & playbooks','10% off events & merch'], cta:'Subscribe' },
+  { name:'The Operator', price:'$79/mo', annual:'$699/yr', sm:'operator_monthly', sa:'operator_annual', features:['Everything in Pass','Deep-dive masterclasses','Full SOP library','Private channel','Group coaching','20% off events & merch'], popular:true, cta:'Go Operator' },
+  { name:'Inner Circle', price:'$199/mo', annual:'$1,799/yr', sm:'inner_circle_monthly', sa:'inner_circle_annual', features:['Everything in Operator','Monthly 1-on-1 (30 min)','VIP event access','Direct DM access','Co-branding opps','30% off everything'], cta:'Apply Now' },
+  { name:'Apprentice', price:'$2,500+', annual:'Per cohort', sm:null, sa:null, features:['8-week live cohort','Choose your track','KHG assignments','Certificate','2 private 1-on-1s','Alumni network','100% access'], cta:'Apply' },
+]
 
-      /* Scroll reveals */
-      .rv{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
-      .rv.vis{opacity:1;transform:translateY(0)}
-      .rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}.rv.d5{transition-delay:.4s}.rv.d6{transition-delay:.48s}.rv.d7{transition-delay:.56s}
+const CONSULTS = [
+  { name:'Strategy Call', price:'$250', dur:'30 min', sk:'strategy_call', desc:'Pick one topic. Direct operator-level advice.' },
+  { name:'Brand Audit', price:'$500', dur:'60 min + report', sk:'brand_audit', desc:'Full written audit. Competitive analysis. Action plan.' },
+  { name:'Full Day', price:'$2,500', dur:'4 hours', sk:'full_day', desc:'Deep dive. Walk away with a complete action plan.' },
+  { name:'Monthly Retainer', price:'$5,000/mo', dur:'Ongoing', sk:'retainer', desc:'Two calls/month. Async access. Quarterly review.', isSub:true },
+]
 
-      /* Preloader */
-      @keyframes breathe{0%,100%{opacity:.3}50%{opacity:1}}
-      @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+const RESULTS = [
+  { num:'57+', label:'Brands Built' },
+  { num:'8', label:'Cities Active' },
+  { num:'198', label:'AI Agents' },
+  { num:'$0', label:'VC Raised' },
+]
 
-      /* Marquee */
-      @keyframes marq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-      .marq-track{display:flex;width:max-content;animation:marq 55s linear infinite}
-      .marq-track:hover{animation-play-state:paused}
+function useReveal() {
+  const ref = useRef(null)
+  const [vis, setVis] = useState(false)
+  useEffect(() => {
+    if (!ref.current) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true) }, { threshold: 0.12 })
+    obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
+  return [ref, vis]
+}
 
-      /* School/program cards */
-      .scard{position:relative;overflow:hidden;min-height:clamp(240px,30vw,340px);cursor:pointer;background:#0D0A07;transition:border-color .4s}
-      .scard:hover .scard-img{opacity:.55;transform:scale(1.04)}
-      .scard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;filter:sepia(.12) saturate(1.2);transition:opacity .6s,transform 5s cubic-bezier(.37,0,.63,1)}
-      .scard::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,8,6,.35) 0%,rgba(10,8,6,.1) 35%,rgba(10,8,6,.8) 100%)}
-      .scard-inner{position:absolute;inset:0;z-index:1;padding:clamp(20px,2.5vw,36px);display:flex;flex-direction:column;justify-content:space-between}
-
-      /* Tier cards */
-      .tcard{background:rgba(242,235,224,.02);border:1px solid rgba(242,235,224,.06);padding:clamp(24px,2.5vw,40px);transition:all .4s;position:relative;overflow:hidden}
-      .tcard:hover{border-color:rgba(201,168,76,.25)}
-      .tcard.pop{border-color:#C9A84C;background:rgba(201,168,76,.04)}
-
-      /* Consult cards (light bg) */
-      .ccard{background:#FFFDF8;border:1px solid rgba(10,8,6,.06);padding:clamp(28px,3vw,48px);cursor:pointer;position:relative;overflow:hidden;transition:all .4s;height:100%}
-      .ccard:hover{border-color:rgba(139,115,64,.3);box-shadow:0 12px 40px rgba(0,0,0,.08);transform:translateY(-3px)}
-
-      /* Mobile menu */
-      .mob-overlay{position:fixed;inset:0;background:rgba(10,8,6,.97);z-index:9998;display:flex;flex-direction:column;justify-content:center;padding:80px 40px;transform:translateX(100%);transition:transform .5s cubic-bezier(.16,1,.3,1)}
-      .mob-overlay.open{transform:translateX(0)}
-      .mob-overlay a{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:400;text-decoration:none;display:block;padding:12px 0;border-bottom:1px solid rgba(242,235,224,.06);color:#F2EBE0}
-
-      /* Responsive */
-      @media(max-width:900px){.desk-links{display:none!important}.mob-btn{display:flex!important}}
-      @media(max-width:768px){.school-grid{grid-template-columns:1fr!important}.tier-grid{grid-template-columns:1fr!important}.consult-grid{grid-template-columns:1fr!important}.stats-grid{grid-template-columns:1fr!important}.exp-grid{grid-template-columns:1fr!important}.pillars-grid{grid-template-columns:repeat(2,1fr)!important}}
-    `}</style>
-
-    <div className="grain"/>
-
-    {/* === PRELOADER === */}
-    <div id="pl" style={{position:'fixed',inset:0,background:'#0A0806',zIndex:10000,display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',transition:'opacity 1.2s cubic-bezier(.16,1,.3,1),visibility 1.2s'}}>
-      <div style={{fontSize:52,color:'#C9A84C',marginBottom:12,animation:'float 3s ease-in-out infinite'}}>&#9878;</div>
-      <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(22px,4vw,36px)',fontWeight:400,letterSpacing:'.08em',animation:'breathe 2.5s ease-in-out infinite'}}>The Lifestyle University</div>
-      <div style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.5em',color:'#C9A84C',opacity:.5,marginTop:14}}>DR. DORSEY COURSES</div>
-    </div>
-
-    {/* === MOBILE MENU === */}
-    <div className={`mob-overlay ${menuOpen?'open':''}`}>
-      {['Schools','Programs','Pricing','Admissions','Apply'].map(l=>(
-        <a key={l} href={`#${l.toLowerCase()}`} onClick={()=>setMenuOpen(false)}>{l}</a>
-      ))}
-    </div>
-
-    {/* === NAV === */}
-    <nav style={{position:'fixed',top:0,left:0,width:'100%',zIndex:9990,padding:'14px clamp(20px,4vw,80px)',display:'flex',alignItems:'center',justifyContent:'space-between',background:'rgba(10,8,6,.88)',backdropFilter:'blur(16px)',borderBottom:'1px solid rgba(201,168,76,.06)'}}>
-      <div style={{display:'flex',alignItems:'center',gap:10}}>
-        <span style={{fontSize:22,color:'#C9A84C'}}>&#9878;</span>
-        <span style={{fontFamily:'Playfair Display,serif',fontSize:15,fontWeight:500,letterSpacing:'.06em'}}>The Lifestyle University</span>
-      </div>
-      <div className="desk-links" style={{display:'flex',gap:28,alignItems:'center'}}>
-        {['Schools','Programs','Pricing','Admissions'].map(l=>(
-          <a key={l} href={`#${l.toLowerCase()}`} style={{fontFamily:'DM Mono,monospace',fontSize:'clamp(8px,.7vw,10px)',letterSpacing:'.18em',textTransform:'uppercase',color:'rgba(242,235,224,.4)',textDecoration:'none'}}>{l}</a>
-        ))}
-        <a href="#apply" style={{fontFamily:'DM Mono,monospace',fontSize:'clamp(8px,.7vw,10px)',letterSpacing:'.18em',textTransform:'uppercase',color:'#0A0806',background:'linear-gradient(135deg,#C9A84C,#E8D5A3)',padding:'10px 22px',textDecoration:'none'}}>Apply Now</a>
-      </div>
-      <button className="mob-btn" onClick={()=>setMenuOpen(!menuOpen)} style={{display:'none',background:'none',border:'none',cursor:'pointer',flexDirection:'column',gap:5,padding:4}}>
-        <span style={{width:22,height:1,background:'#F2EBE0',display:'block',transition:'all .3s',transform:menuOpen?'rotate(45deg) translateY(4px)':'none'}}/>
-        <span style={{width:22,height:1,background:'#F2EBE0',display:'block',transition:'all .3s',opacity:menuOpen?0:1}}/>
-        <span style={{width:22,height:1,background:'#F2EBE0',display:'block',transition:'all .3s',transform:menuOpen?'rotate(-45deg) translateY(-4px)':'none'}}/>
-      </button>
-    </nav>
-
-    {/* ======= HERO — Ornate Ballroom ======= */}
-    <section style={{position:'relative',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden'}}>
-      <img src={`${SB}/luxury-venue.jpg`} alt="" style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.4,filter:'brightness(.75) saturate(1.3) sepia(.12)'}}/>
-      <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,rgba(10,8,6,.55) 0%,rgba(10,8,6,.15) 25%,rgba(10,8,6,.2) 55%,rgba(10,8,6,.85) 88%,#0A0806 100%)'}}/>
-      <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 25%,rgba(201,168,76,.07) 0%,transparent 55%)'}}/>
-      <div style={{position:'relative',zIndex:2,textAlign:'center',maxWidth:820,padding:'140px 24px 120px'}}>
-        <div className="rv" style={{fontSize:56,color:'#C9A84C',marginBottom:20,animation:'float 4s ease-in-out infinite'}}>&#9878;</div>
-        <h1 className="rv d1" style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(36px,7.5vw,84px)',fontWeight:400,lineHeight:.98,letterSpacing:'-.01em',marginBottom:20}}>
-          <em style={{fontStyle:'italic'}}>Build the Life.</em><br/>Lead the Room.
-        </h1>
-        <p className="rv d2" style={{fontFamily:'Cormorant Garamond,serif',fontSize:'clamp(16px,2vw,24px)',fontWeight:300,color:'rgba(242,235,224,.55)',letterSpacing:'.06em',marginBottom:44}}>A New Institution for the Ambitious &amp; Elite</p>
-        <div className="rv d3" style={{display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap'}}>
-          <a href="#apply" style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(11px,1.1vw,15px)',fontWeight:600,letterSpacing:'.12em',textTransform:'uppercase',color:'#0A0806',background:'linear-gradient(135deg,#C9A84C,#E8D5A3,#C9A84C)',padding:'16px 44px',textDecoration:'none',boxShadow:'0 4px 40px rgba(201,168,76,.25)',transition:'all .4s'}}>Apply Now</a>
-          <a href="#schools" style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(11px,1.1vw,15px)',fontWeight:500,letterSpacing:'.12em',textTransform:'uppercase',color:'#E8D5A3',border:'1px solid rgba(201,168,76,.3)',padding:'16px 44px',textDecoration:'none',transition:'all .4s'}}>Explore Schools</a>
-        </div>
-      </div>
-      <div style={{position:'absolute',bottom:0,left:0,width:'100%',height:2,background:'linear-gradient(90deg,transparent,#C9A84C,transparent)',opacity:.25,zIndex:3}}/>
+function Section({ children, className = '', id, light }) {
+  const [ref, vis] = useReveal()
+  return (
+    <section ref={ref} id={id} className={`${className} ${light ? 'bg-cream text-bg' : ''}`}
+      style={{ opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(40px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)' }}>
+      {children}
     </section>
+  )
+}
 
-    {/* ======= PILLARS OF MASTERY ======= */}
-    <section style={{padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)',textAlign:'center'}}>
-      <div className="rv" style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:16}}>
-        <div style={{width:60,height:1,background:'#C9A84C'}}/>
-        <span style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#C9A84C'}}>FOUNDATION</span>
-        <div style={{width:60,height:1,background:'#C9A84C'}}/>
+function Crest({ size = 80 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+      <path d="M50 5 L65 20 L80 15 L75 35 L95 45 L80 55 L85 75 L65 70 L50 90 L35 70 L15 75 L20 55 L5 45 L25 35 L20 15 L35 20 Z" stroke="#D4B87A" strokeWidth="1.5" fill="rgba(212,184,122,0.08)"/>
+      <circle cx="50" cy="47" r="18" stroke="#D4B87A" strokeWidth="0.8" fill="none"/>
+      <text x="50" y="44" textAnchor="middle" fill="#D4B87A" fontSize="10" fontFamily="Cormorant Garamond, serif" fontWeight="600">TLU</text>
+      <text x="50" y="55" textAnchor="middle" fill="#D4B87A" fontSize="6" fontFamily="DM Mono, monospace" letterSpacing="1.5">EST. 2026</text>
+    </svg>
+  )
+}
+
+export default function Home() {
+  const [buying, setBuying] = useState(null)
+  const [bc, setBc] = useState('monthly')
+  const [fd, setFd] = useState({ name:'', email:'', phone:'', industry:'' })
+  const [sent, setSent] = useState(false)
+  const [sub, setSub] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  const [navSolid, setNavSolid] = useState(false)
+
+  useEffect(() => {
+    setTimeout(() => setLoaded(true), 2400)
+    const fn = () => setNavSolid(window.scrollY > 80)
+    window.addEventListener('scroll', fn)
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
+  const checkout = async (sk, mode = 'payment') => {
+    setBuying(sk)
+    try {
+      const r = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ priceId: STRIPE[sk], mode, programKey: sk }) })
+      const d = await r.json()
+      if (d.url) window.location.href = d.url
+    } catch (e) { console.error(e) }
+    setBuying(null)
+  }
+
+  const submit = async (e) => {
+    e.preventDefault(); setSub(true)
+    try { await fetch('/api/enroll', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(fd) }); setSent(true) } catch(e) { console.error(e) }
+    setSub(false)
+  }
+
+  return (
+    <main className="min-h-screen">
+      {/* PRELOADER */}
+      <div className={`fixed inset-0 z-[10000] bg-bg flex flex-col items-center justify-center transition-all duration-[1200ms] ${loaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <Crest size={60} />
+        <p className="mt-6 text-cream text-2xl md:text-4xl font-light tracking-[0.15em] font-display" style={{ animation:'breathe 2s ease-in-out infinite' }}>THE LIFESTYLE UNIVERSITY</p>
+        <p className="mt-2 text-[9px] tracking-[0.4em] text-gold/50 font-mono">DR. DORSEY COURSES</p>
       </div>
-      <h2 className="rv d1" style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,52px)',fontWeight:400,marginBottom:52}}>Our Pillars of <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Mastery</em></h2>
-      <div className="rv d2 pillars-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'clamp(24px,3vw,48px)',maxWidth:900,margin:'0 auto'}}>
-        {[{icon:'&#9826;',label:'Business & Ownership',sub:'Build empires, not side projects'},{icon:'&#9878;',label:'Brand & Influence',sub:'Authority that opens doors'},{icon:'&#9670;',label:'Lifestyle & Power',sub:'Design life on your terms'},{icon:'&#9881;',label:'Systems & Automation',sub:'Scale without the chaos'}].map((p,i)=>(
-          <div key={i} style={{textAlign:'center'}}>
-            <div style={{fontSize:30,color:'#C9A84C',marginBottom:14}} dangerouslySetInnerHTML={{__html:p.icon}}/>
-            <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(13px,1.2vw,16px)',fontWeight:500,marginBottom:6}}>{p.label}</div>
-            <div style={{fontSize:11,color:'rgba(242,235,224,.3)',lineHeight:1.5}}>{p.sub}</div>
+      <style>{`@keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+
+      {/* NAV */}
+      <nav className={`fixed top-0 left-0 w-full z-[1000] px-6 md:px-12 py-4 flex items-center justify-between transition-all duration-500 ${navSolid ? 'bg-bg/95 backdrop-blur-xl border-b border-gold/8' : 'bg-transparent'}`}>
+        <div className="flex items-center gap-3">
+          <Crest size={28} />
+          <span className="text-sm tracking-[0.1em] text-cream font-display">The Lifestyle University</span>
+        </div>
+        <div className="hidden md:flex items-center gap-8">
+          {['Schools','Programs','Pricing','Consultations'].map(l => (
+            <a key={l} href={`#${l.toLowerCase()}`} className="text-[9px] tracking-[0.2em] uppercase text-cream/40 hover:text-gold transition-colors font-mono">{l}</a>
+          ))}
+          <a href="#enroll" className="text-[9px] tracking-[0.2em] uppercase bg-gold text-bg px-5 py-2 hover:bg-gold/80 transition-colors font-mono">Apply Now</a>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0"><img src={`${SB}/hero-bg.jpg`} alt="" className="w-full h-full object-cover opacity-40" /></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-bg/60 via-bg/20 to-bg" />
+        <div className="relative text-center max-w-4xl mx-auto px-6 pt-20">
+          <div className="flex justify-center mb-8"><Crest size={80} /></div>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light leading-[1.05] mb-6 font-display">
+            <em className="italic text-gold">Build the Life.</em><br/>Lead the Room.
+          </h1>
+          <p className="text-sm md:text-base text-cream/45 max-w-lg mx-auto mb-10 leading-relaxed">A New Institution for the Ambitious & Elite. Real courses built from 57+ brands across 8 cities.</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#enroll" className="px-10 py-4 bg-gold text-bg text-sm font-semibold tracking-[0.15em] uppercase hover:bg-gold/80 transition-all">Apply Now</a>
+            <a href="#schools" className="px-10 py-4 border border-gold/30 text-gold text-sm tracking-[0.15em] uppercase hover:border-gold hover:bg-gold/5 transition-all">Explore Schools</a>
           </div>
-        ))}
-      </div>
-    </section>
-
-    {/* ======= SCHOOLS OF EXCELLENCE ======= */}
-    <section id="schools" style={{padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)'}}>
-      <div className="rv" style={{textAlign:'center',marginBottom:48}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:16}}>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
-          <span style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#C9A84C'}}>DEPARTMENTS</span>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
         </div>
-        <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,52px)',fontWeight:400}}>Schools of <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Excellence</em></h2>
-      </div>
-      <div className="school-grid" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:3,maxWidth:1400,margin:'0 auto'}}>
-        {[
-          {name:'Business & Ownership',sub:'Launch ventures, acquire assets, build real equity',flagship:'Event Money Machine',price:'$1,997',sk:'event_money_machine',img:'thesis-bg.jpg'},
-          {name:'Brand & Influence',sub:'Personal brand, media authority, cultural capital',flagship:'Lifestyle Specialist Blueprint',price:'$1,997',sk:'lifestyle_specialist',img:'hero-bg.jpg'},
-          {name:'Wealth & Negotiation',sub:'Revenue architecture, deal structure, negotiation',flagship:'Founder to Empire',price:'$2,997',sk:'founder_empire',img:'luxury-venue.jpg'},
-          {name:'Lifestyle & Power',sub:'Design your environment, network, and daily life',flagship:'Nightlife Money Machine',price:'$1,997',sk:'nightlife_money',img:'rooftop-lounge.jpg'},
-          {name:'Systems & Automation',sub:'AI, CRM, SOPs, delegation, operational scale',flagship:'Automate Your Business OS',price:'$2,497',sk:'automate_biz_os',img:'penthouse-skyline.jpg'},
-          {name:'Hospitality & Culture',sub:'Venues, restaurants, food brands, guest experience',flagship:'QSR Launch Blueprint',price:'$1,997',sk:'restaurant_qsr',img:'garden-district.jpg'},
-          {name:'Commerce & Product',sub:'Shopify, merch, drops, e-commerce, brand retail',flagship:'Culture Brand E-Com',price:'$1,997',sk:'culture_ecom',img:'thesis-bg.jpg'},
-          {name:'Growth & Promotion',sub:'Audience building, marketing, lead generation',flagship:'Audience to Income System',price:'$1,497',sk:'audience_to_income',img:'rooftop-lounge.jpg'},
-        ].map((s,i)=>(
-          <div key={i} className={`rv d${Math.min(i+1,7)} scard`} onClick={()=>s.sk&&checkout(s.sk)}>
-            <img className="scard-img" src={`${SB}/${s.img}`} alt=""/>
-            <div className="scard-inner">
-              <div>
-                <div style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.2em',color:'#C9A84C',marginBottom:6}}>SCHOOL OF</div>
-                <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(20px,2.5vw,32px)',fontWeight:600,textShadow:'0 2px 20px rgba(0,0,0,.8)'}}>{s.name}</div>
-                <div style={{fontSize:12,color:'rgba(242,235,224,.4)',marginTop:6}}>{s.sub}</div>
-              </div>
-              <div>
-                <div style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.12em',color:'#E8D5A3',marginBottom:10}}>FLAGSHIP: {s.flagship}</div>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(22px,2.5vw,34px)',fontWeight:300,color:'#E8D5A3'}}>{s.price}</span>
-                  <span style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.18em',color:'#C9A84C',border:'1px solid rgba(201,168,76,.3)',padding:'7px 16px'}}>EXPLORE SCHOOL</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    {/* ======= SIGNATURE PROGRAMS ======= */}
-    <section id="programs" style={{padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)'}}>
-      <div className="rv" style={{textAlign:'center',marginBottom:48}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:16}}>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
-          <span style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#C9A84C'}}>FLAGSHIP</span>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
-        </div>
-        <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,52px)',fontWeight:400}}>Signature <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Programs</em></h2>
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))',gap:3,maxWidth:1200,margin:'0 auto'}}>
-        {[
-          {name:'Executive Mastery',sub:'Build and lead a multi-brand enterprise from vision to operations',price:'$2,997',sk:'founder_empire',img:'luxury-venue.jpg'},
-          {name:'Influence & Media',sub:'Turn your name into a brand, your brand into a business',price:'$1,997',sk:'lifestyle_specialist',img:'hero-bg.jpg'},
-          {name:'Investment & Wealth',sub:'Revenue architecture, deal flow, and asset strategy',price:'$1,997',sk:'event_money_machine',img:'penthouse-skyline.jpg'},
-          {name:'Automate & Scale',sub:'AI agents, CRM, SOPs, delegation — the full operator toolkit',price:'$2,497',sk:'automate_biz_os',img:'thesis-bg.jpg'},
-        ].map((p,i)=>(
-          <div key={i} className={`rv d${i+1} scard`} style={{minHeight:280}} onClick={()=>p.sk&&checkout(p.sk)}>
-            <img className="scard-img" src={`${SB}/${p.img}`} alt=""/>
-            <div className="scard-inner" style={{justifyContent:'flex-end'}}>
-              <div>
-                <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(20px,2.2vw,28px)',fontWeight:600,fontStyle:'italic',color:'#E8D5A3',marginBottom:8,textShadow:'0 2px 16px rgba(0,0,0,.7)'}}>{p.name}</div>
-                <div style={{fontSize:12,color:'rgba(242,235,224,.4)',lineHeight:1.6,marginBottom:16}}>{p.sub}</div>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span style={{fontFamily:'DM Mono,monospace',fontSize:15,color:'#C9A84C'}}>{p.price}</span>
-                  <span style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.18em',color:'#E8D5A3',border:'1px solid rgba(232,213,163,.2)',padding:'7px 16px'}}>LEARN MORE</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    {/* ======= THE RESULTS — Stats bar ======= */}
-    <section style={{position:'relative',padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)',overflow:'hidden'}}>
-      <img src={`${SB}/penthouse-skyline.jpg`} alt="" style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.2,filter:'sepia(.15)'}}/>
-      <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,#0A0806 0%,rgba(10,8,6,.4) 50%,#0A0806 100%)'}}/>
-      <div style={{position:'relative',zIndex:1,textAlign:'center',maxWidth:1000,margin:'0 auto'}}>
-        <div className="rv" style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:40}}>
-          <div style={{width:80,height:1,background:'#C9A84C'}}/>
-          <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,48px)',fontWeight:400}}>The <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Results</em></h2>
-          <div style={{width:80,height:1,background:'#C9A84C'}}/>
-        </div>
-        <div className="rv d1 stats-grid" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:32}}>
-          {[['57+','Brands Built'],['8','Cities Active'],['$0','VC Raised']].map(([n,l],i)=>(
-            <div key={i}>
-              <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(40px,6vw,72px)',fontWeight:300,color:'#E8D5A3',lineHeight:1}}>{n}</div>
-              <div style={{fontFamily:'DM Mono,monospace',fontSize:11,letterSpacing:'.2em',color:'rgba(242,235,224,.3)',marginTop:8}}>{l}</div>
+        <div className="absolute bottom-0 left-0 right-0 grid grid-cols-2 md:grid-cols-4 border-t border-cream/8">
+          {RESULTS.map(r => (
+            <div key={r.label} className="py-5 text-center border-r border-cream/5 last:border-r-0">
+              <div className="text-2xl md:text-3xl text-gold font-light font-display">{r.num}</div>
+              <div className="text-[8px] tracking-[0.25em] text-cream/25 mt-1 uppercase font-mono">{r.label}</div>
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </section>
 
-    {/* ======= THE STUDENT EXPERIENCE ======= */}
-    <section style={{padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)'}}>
-      <div className="rv" style={{textAlign:'center',marginBottom:48}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:16}}>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
-          <span style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#C9A84C'}}>EXPERIENCE</span>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
+      {/* PILLARS */}
+      <Section className="py-20 md:py-28 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="h-px w-16 bg-gold/20" />
+            <h2 className="text-3xl md:text-4xl font-light tracking-wider font-display">Our Pillars of <em className="italic text-gold">Mastery</em></h2>
+            <div className="h-px w-16 bg-gold/20" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            {PILLARS.map(p => (
+              <div key={p.title} className="flex flex-col items-center gap-3">
+                <div className="w-14 h-14 rounded-full border border-gold/20 flex items-center justify-center text-gold text-xl">{p.icon}</div>
+                <h3 className="text-sm font-medium tracking-wide font-display">{p.title}</h3>
+                <p className="text-[11px] text-cream/35 leading-relaxed">{p.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,52px)',fontWeight:400}}>The Student <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Experience</em></h2>
-      </div>
-      <div className="rv d1 exp-grid" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,maxWidth:1100,margin:'0 auto'}}>
-        {[{title:'Elite Workshops',sub:'Live sessions with real operators, not talking heads',img:'rooftop-lounge.jpg'},{title:'Private Community',sub:'Connect with builders at your level across 8 cities',img:'hero-bg.jpg'},{title:'Live Mentorship',sub:'Direct access to Dr. Dorsey and the KHG network',img:'thesis-bg.jpg'}].map((e,i)=>(
-          <div key={i} style={{position:'relative',overflow:'hidden',minHeight:260,background:'#0D0A07'}}>
-            <img src={`${SB}/${e.img}`} alt="" style={{width:'100%',height:'100%',objectFit:'cover',opacity:.4,filter:'sepia(.1)'}}/>
-            <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,transparent 40%,rgba(10,8,6,.9) 100%)'}}/>
-            <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'clamp(20px,2vw,32px)',zIndex:1}}>
-              <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(18px,2vw,24px)',fontWeight:500,marginBottom:6}}>{e.title}</div>
-              <div style={{fontSize:12,color:'rgba(242,235,224,.4)',lineHeight:1.5}}>{e.sub}</div>
+      </Section>
+
+      {/* SCHOOLS */}
+      <Section id="schools" light className="py-20 md:py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="h-px w-16 bg-[#8B7340]/20" />
+              <h2 className="text-3xl md:text-5xl font-light font-display">Schools of <em className="italic text-[#8B7340]">Excellence</em></h2>
+              <div className="h-px w-16 bg-[#8B7340]/20" />
+            </div>
+            <p className="text-sm text-bg/40 max-w-md mx-auto">10 industry-specific schools. Each built from real experience.</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-3">
+            {SCHOOLS.map(s => (
+              <div key={s.name} className="relative group overflow-hidden min-h-[200px] md:min-h-[240px] cursor-pointer" onClick={() => checkout(s.sk)}>
+                <div className="absolute inset-0 transition-all duration-700 group-hover:scale-105"><img src={`${SB}/${s.img}`} alt="" className="w-full h-full object-cover" /></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-bg/40 to-bg/20" />
+                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between z-10">
+                  <div>
+                    <p className="text-[9px] tracking-[0.2em] text-gold uppercase mb-1 font-mono">School of</p>
+                    <h3 className="text-xl md:text-2xl font-semibold text-cream tracking-wide font-display">{s.name}</h3>
+                    <p className="text-[11px] text-cream/50 mt-2 max-w-[280px] leading-relaxed">{s.desc}</p>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <div className="text-[9px] tracking-[0.15em] text-gold/70 uppercase border border-cream/15 px-3 py-1.5 bg-bg/30 backdrop-blur-sm hover:bg-gold hover:text-bg transition-all font-mono">Explore School</div>
+                    <div className="text-right">
+                      <div className="text-xs text-cream/40 font-mono">from</div>
+                      <div className="text-xl text-gold font-light font-display">{s.price}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* SIGNATURE PROGRAMS */}
+      <Section id="programs" className="py-20 md:py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="h-px w-16 bg-gold/20" />
+              <h2 className="text-3xl md:text-5xl font-light font-display">Signature <em className="italic text-gold">Programs</em></h2>
+              <div className="h-px w-16 bg-gold/20" />
             </div>
           </div>
-        ))}
-      </div>
-    </section>
-
-    {/* ======= PRICING / MEMBERSHIP ======= */}
-    <section id="pricing" style={{padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)'}}>
-      <div className="rv" style={{textAlign:'center',marginBottom:16}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:16}}>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
-          <span style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#C9A84C'}}>MEMBERSHIP</span>
-          <div style={{width:60,height:1,background:'#C9A84C'}}/>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {PROGRAMS.map((p, i) => (
+              <div key={p.name} className="relative group overflow-hidden min-h-[220px] cursor-pointer" onClick={() => checkout(p.sk)}>
+                <div className="absolute inset-0 transition-all duration-700 group-hover:scale-105"><img src={`${SB}/${SCHOOLS[i].img}`} alt="" className="w-full h-full object-cover" /></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-bg/50 to-bg/30" />
+                <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                  <div>
+                    <h3 className="text-lg font-medium text-cream italic font-display">{p.name}</h3>
+                    <p className="text-[9px] tracking-[0.15em] text-gold/60 mt-1 uppercase font-mono">{p.cat}</p>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <div className="text-[9px] tracking-[0.15em] text-gold/70 uppercase border border-cream/15 px-3 py-1.5 bg-bg/30 backdrop-blur-sm hover:bg-gold hover:text-bg transition-all font-mono">Learn More</div>
+                    <div className="text-lg text-gold font-light font-display">{p.price}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,52px)',fontWeight:400}}>Choose Your <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Level</em></h2>
-      </div>
-      <div className="rv d1" style={{display:'flex',justifyContent:'center',gap:8,marginBottom:40}}>
-        {['monthly','annual'].map(v=>(
-          <button key={v} onClick={()=>setBc(v)} style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.2em',padding:'8px 20px',background:bc===v?'#C9A84C':'transparent',color:bc===v?'#0A0806':'rgba(242,235,224,.4)',border:'1px solid rgba(201,168,76,.3)',cursor:'pointer',textTransform:'uppercase'}}>{v}{v==='annual'&&<span style={{color:bc==='annual'?'#0A0806':'#4ADE80',fontSize:9,marginLeft:6}}>SAVE</span>}</button>
-        ))}
-      </div>
-      <div className="rv d2 tier-grid" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(210px,1fr))',gap:2,maxWidth:1200,margin:'0 auto'}}>
-        {[
-          {name:'The Taste',price:'FREE',annual:'',sm:null,sa:null,features:['1 mini-lesson per school','Weekly newsletter','Public community','Free training library'],cta:'Start Free'},
-          {name:'Lifestyle Pass',price:'$29/mo',annual:'$249/yr',sm:'lifestyle_pass_monthly',sa:'lifestyle_pass_annual',features:['Full course library','Monthly live Q&A','Community','Templates & playbooks','10% off events & merch'],cta:'Subscribe'},
-          {name:'The Operator',price:'$79/mo',annual:'$699/yr',sm:'operator_monthly',sa:'operator_annual',pop:true,features:['Everything in Pass','Masterclasses','Full SOP library','Private channel','Group coaching','20% off events & merch'],cta:'Go Operator'},
-          {name:'Inner Circle',price:'$199/mo',annual:'$1,799/yr',sm:'inner_circle_monthly',sa:'inner_circle_annual',features:['Everything in Operator','Monthly 1-on-1','VIP event access','Direct DM','Co-branding','30% off'],cta:'Apply'},
-          {name:'Apprentice',price:'$2,500+',annual:'Per cohort',sm:null,sa:null,features:['8-week live cohort','Choose track','KHG assignments','Certificate','2 private 1-on-1s','Alumni network','100% access'],cta:'Apply'},
-        ].map((t,i)=>(
-          <div key={i} className={`tcard ${t.pop?'pop':''}`}>
-            {t.pop&&<div style={{position:'absolute',top:0,left:0,right:0,background:'#C9A84C',color:'#0A0806',fontFamily:'DM Mono,monospace',fontSize:7,letterSpacing:'.2em',textAlign:'center',padding:5}}>MOST POPULAR</div>}
-            <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(18px,2vw,24px)',fontWeight:500,marginTop:t.pop?16:0,marginBottom:8}}>{t.name}</div>
-            <div style={{fontFamily:'DM Mono,monospace',fontSize:'clamp(22px,2.5vw,28px)',color:'#C9A84C'}}>{t.price}</div>
-            {t.annual&&<div style={{fontFamily:'DM Mono,monospace',fontSize:10,color:'rgba(242,235,224,.2)',marginBottom:12}}>{t.annual}</div>}
-            <ul style={{listStyle:'none',margin:'16px 0 20px'}}>
-              {t.features.map((f,fi)=>(
-                <li key={fi} style={{fontSize:12,color:'rgba(242,235,224,.4)',padding:'5px 0',borderBottom:'1px solid rgba(242,235,224,.03)',display:'flex',alignItems:'center',gap:8}}>
-                  <span style={{width:4,height:4,background:'#C9A84C',flexShrink:0}}/>
-                  {f}
-                </li>
+      </Section>
+
+      {/* RESULTS */}
+      <Section className="py-16 px-6 border-y border-gold/10">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-10">
+            <div className="h-px w-20 bg-gold/20" />
+            <h2 className="text-2xl md:text-3xl font-light italic text-gold font-display">The Results</h2>
+            <div className="h-px w-20 bg-gold/20" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {RESULTS.map(r => (
+              <div key={r.label}>
+                <div className="text-3xl md:text-5xl text-gold font-light font-display">{r.num}</div>
+                <div className="text-[9px] tracking-[0.25em] text-cream/30 mt-2 uppercase font-mono">{r.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* STUDENT EXPERIENCE */}
+      <Section className="py-20 md:py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="h-px w-16 bg-gold/20" />
+              <h2 className="text-3xl md:text-4xl font-light font-display">The Student <em className="italic text-gold">Experience</em></h2>
+              <div className="h-px w-16 bg-gold/20" />
+            </div>
+          </div>
+          <div className="grid md:grid-cols-3 gap-3">
+            {[
+              { title:'Elite Workshops', desc:'Live deep-dives with Dr. Dorsey on building, scaling, and monetizing.', img:'rooftop-lounge.jpg' },
+              { title:'Private Community', desc:'Network with other operators, founders, and ambitious builders.', img:'luxury-venue.jpg' },
+              { title:'Live Mentorship', desc:'Direct access. Monthly coaching. Real accountability.', img:'garden-district.jpg' },
+            ].map(exp => (
+              <div key={exp.title} className="relative overflow-hidden min-h-[260px] group">
+                <div className="absolute inset-0 transition-all duration-700 group-hover:scale-105"><img src={`${SB}/${exp.img}`} alt="" className="w-full h-full object-cover" /></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-bg/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                  <h3 className="text-xl text-cream font-medium mb-2 font-display">{exp.title}</h3>
+                  <p className="text-[12px] text-cream/50 leading-relaxed">{exp.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* PRICING */}
+      <Section id="pricing" light className="py-20 md:py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <p className="text-[9px] tracking-[0.4em] text-[#8B7340] mb-2 uppercase font-mono">Membership Tiers</p>
+            <h2 className="text-3xl md:text-5xl font-light text-bg font-display">Choose Your <em className="italic text-[#8B7340]">Path</em></h2>
+          </div>
+          <div className="flex justify-center gap-3 my-8">
+            <button onClick={() => setBc('monthly')} className={`px-5 py-2 text-[10px] tracking-[0.2em] uppercase font-mono transition-all ${bc==='monthly' ? 'bg-bg text-gold' : 'border border-bg/15 text-bg/50'}`}>Monthly</button>
+            <button onClick={() => setBc('annual')} className={`px-5 py-2 text-[10px] tracking-[0.2em] uppercase font-mono transition-all ${bc==='annual' ? 'bg-bg text-gold' : 'border border-bg/15 text-bg/50'}`}>Annual <span className="text-green-700 text-[8px]">SAVE</span></button>
+          </div>
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {TIERS.map(t => (
+              <div key={t.name} className={`relative p-6 border transition-all ${t.popular ? 'border-gold bg-bg text-cream scale-[1.02]' : 'border-bg/10 bg-white hover:border-[#8B7340]/30'}`}>
+                {t.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-bg text-[7px] tracking-[0.2em] px-4 py-1 uppercase font-mono">Most Popular</div>}
+                <h3 className="text-lg mb-2 font-display">{t.name}</h3>
+                <div className="text-2xl mb-1 font-mono" style={{ color: t.popular ? '#D4B87A' : '#8B7340' }}>{t.price}</div>
+                {t.annual && <div className="text-[10px] opacity-40 mb-1 font-mono">{t.annual}</div>}
+                <ul className="mt-4 space-y-2 mb-6">
+                  {t.features.map(f => (
+                    <li key={f} className={`text-xs flex items-start gap-2 ${t.popular ? 'text-cream/50' : 'text-bg/50'}`}>
+                      <span className="text-gold text-[6px] mt-1.5">{'\u25C6'}</span>{f}
+                    </li>
+                  ))}
+                </ul>
+                {t.sm ? (
+                  <button onClick={() => checkout(bc==='annual' ? t.sa : t.sm, 'subscription')}
+                    className={`w-full py-3 text-[10px] tracking-[0.15em] uppercase font-semibold font-mono transition-all ${t.popular ? 'bg-gold text-bg hover:bg-gold/80' : 'border border-bg/20 text-bg hover:bg-bg/5'}`}>{t.cta}</button>
+                ) : (
+                  <a href="#enroll" className={`block text-center py-3 text-[10px] tracking-[0.15em] uppercase font-semibold font-mono transition-all ${t.name==='Apprentice' ? 'bg-bg text-gold hover:bg-bg/80' : 'border border-bg/20 text-bg hover:bg-bg/5'}`}>{t.cta}</a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* CONSULTATIONS */}
+      <Section id="consultations" className="py-20 md:py-28 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-[9px] tracking-[0.4em] text-gold mb-2 uppercase font-mono">Work Directly With Dr. Dorsey</p>
+            <h2 className="text-3xl md:text-5xl font-light font-display">Book a Strategy <em className="italic text-gold">Session</em></h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2">
+            {CONSULTS.map((c, i) => (
+              <div key={c.name} className="relative p-6 md:p-8 border border-gold/10 bg-surface hover:border-gold/30 transition-all cursor-pointer group overflow-hidden"
+                onClick={() => checkout(c.sk, c.isSub ? 'subscription' : 'payment')}>
+                <div className="absolute top-[-8px] right-3 text-6xl text-gold/5 font-light font-display">{String(i+1).padStart(2,'0')}</div>
+                <h3 className="text-xl font-medium relative z-10 font-display">{c.name}</h3>
+                <p className="text-[12px] text-cream/40 mt-2 leading-relaxed relative z-10">{c.desc}</p>
+                <div className="flex items-end justify-between mt-4 relative z-10">
+                  <div className="text-xl text-gold font-mono">{c.price}</div>
+                  <div className="text-[9px] text-cream/30 uppercase tracking-wide font-mono">{c.dur}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* FOUNDER */}
+      <Section className="py-20 md:py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="text-[9px] tracking-[0.4em] text-gold mb-4 uppercase font-mono">Meet Our Founder</p>
+              <h2 className="text-3xl md:text-5xl font-light mb-6 leading-tight font-display">Building Tomorrow&apos;s<br/><em className="italic text-gold">Leaders</em></h2>
+              <p className="text-sm text-cream/45 leading-relaxed mb-6">Dr. DoLo Dorsey built a 57-brand enterprise spanning events, hospitality, tech, food, and consumer products across 8 cities &mdash; without a dollar of venture capital.</p>
+              <p className="text-sm text-cream/45 leading-relaxed mb-8">The Lifestyle University isn&apos;t a course platform. It&apos;s the operating manual for building an empire.</p>
+              <a href="#enroll" className="inline-block px-8 py-3 border border-gold/30 text-gold text-[10px] tracking-[0.2em] uppercase hover:bg-gold/10 transition-all font-mono">Learn More</a>
+            </div>
+            <div className="relative h-[400px] md:h-[500px] overflow-hidden">
+              <img src={`${SB}/hero-bg.jpg`} alt="Dr. Dorsey" className="w-full h-full object-cover opacity-70" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ENROLL */}
+      <Section id="enroll" light className="py-20 md:py-28 px-6">
+        <div className="max-w-lg mx-auto text-center">
+          <div className="flex justify-center"><Crest size={48} /></div>
+          <h2 className="text-3xl md:text-4xl font-light mt-6 mb-2 text-bg font-display">{sent ? "You're In." : 'Begin Your Journey'}</h2>
+          <p className="text-sm text-bg/40 mb-8">Join The Lifestyle University and start building your empire today.</p>
+          {sent ? (
+            <div className="py-12">
+              <div className="text-[#8B7340] text-5xl mb-4">{'\u25C6'}</div>
+              <p className="text-bg/60">We received your info. Dr. Dorsey&apos;s team will reach out.</p>
+              <p className="text-[9px] text-bg/25 tracking-[0.2em] mt-4 uppercase font-mono">Check your email for early access</p>
+            </div>
+          ) : (
+            <form onSubmit={submit} className="space-y-3 text-left">
+              <input type="text" placeholder="Full Name" required value={fd.name} onChange={e => setFd({...fd, name:e.target.value})} className="w-full bg-white border border-bg/10 px-5 py-4 text-bg text-sm placeholder:text-bg/25 focus:border-[#8B7340] focus:outline-none transition-all" />
+              <input type="email" placeholder="Email" required value={fd.email} onChange={e => setFd({...fd, email:e.target.value})} className="w-full bg-white border border-bg/10 px-5 py-4 text-bg text-sm placeholder:text-bg/25 focus:border-[#8B7340] focus:outline-none transition-all" />
+              <input type="tel" placeholder="Phone (optional)" value={fd.phone} onChange={e => setFd({...fd, phone:e.target.value})} className="w-full bg-white border border-bg/10 px-5 py-4 text-bg text-sm placeholder:text-bg/25 focus:border-[#8B7340] focus:outline-none transition-all" />
+              <select value={fd.industry} onChange={e => setFd({...fd, industry:e.target.value})} required className="w-full bg-white border border-bg/10 px-5 py-4 text-bg text-sm focus:border-[#8B7340] focus:outline-none transition-all appearance-none">
+                <option value="">Select Your School</option>
+                {SCHOOLS.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+              </select>
+              <button type="submit" disabled={sub} className="w-full py-4 bg-bg text-gold font-semibold text-sm tracking-[0.2em] uppercase hover:bg-bg/80 transition-all disabled:opacity-50 font-mono">
+                {sub ? 'Submitting...' : 'Get Early Access'}
+              </button>
+              <p className="text-center text-bg/20 text-[9px] tracking-[0.15em] uppercase font-mono">Free training included &middot; Secure checkout via Stripe</p>
+            </form>
+          )}
+        </div>
+      </Section>
+
+      {/* FOOTER */}
+      <footer className="py-10 px-6 border-t border-gold/8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
+              {['Schools','Programs','Admissions','Partnerships','About','Contact','FAQs'].map(l => (
+                <a key={l} href={l === 'Admissions' ? '#enroll' : `#${l.toLowerCase()}`} className="text-[9px] tracking-[0.15em] text-cream/25 hover:text-gold transition-colors uppercase font-mono">{l}</a>
               ))}
-            </ul>
-            {t.sm?(
-              <button onClick={()=>checkout(bc==='annual'?t.sa:t.sm,'subscription')} disabled={buying} style={{width:'100%',fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.18em',padding:14,background:t.pop?'linear-gradient(135deg,#C9A84C,#E8D5A3)':'transparent',color:t.pop?'#0A0806':'#C9A84C',border:t.pop?'none':'1px solid rgba(201,168,76,.3)',cursor:'pointer'}}>{t.cta}</button>
-            ):(
-              <a href="#apply" style={{display:'block',width:'100%',textAlign:'center',fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.18em',padding:14,color:'#C9A84C',border:'1px solid rgba(201,168,76,.3)',textDecoration:'none'}}>{t.cta}</a>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
-
-    {/* ======= CONSULTATIONS (Light section) ======= */}
-    <section id="admissions" style={{padding:'clamp(64px,9vw,110px) clamp(20px,4vw,80px)',background:'#F2EBE0',color:'#0A0806'}}>
-      <div style={{maxWidth:1000,margin:'0 auto'}}>
-        <div className="rv" style={{textAlign:'center',marginBottom:48}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:16,marginBottom:16}}>
-            <div style={{width:60,height:1,background:'#8B7340'}}/>
-            <span style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#8B7340'}}>PRIVATE ADVISORY</span>
-            <div style={{width:60,height:1,background:'#8B7340'}}/>
-          </div>
-          <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(28px,4.5vw,52px)',fontWeight:400,color:'#0A0806'}}>Book a Strategy <em style={{fontStyle:'italic',color:'#8B7340'}}>Session</em></h2>
-        </div>
-        <div className="rv d1 consult-grid" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:1}}>
-          {[
-            {name:'Strategy Call',desc:'30-minute focused session. Pick one topic. Operator-level advice.',price:'$250',num:'01',sk:'strategy_call'},
-            {name:'Brand Audit',desc:'Full written audit, competitive analysis, and action plan.',price:'$500',num:'02',sk:'brand_audit'},
-            {name:'Full Day',desc:'4-hour deep dive. Complete action plan and all templates.',price:'$2,500',num:'03',sk:'full_day'},
-            {name:'Monthly Retainer',desc:'Two calls/month. Async access. KHG network.',price:'$5,000/mo',num:'04',sk:'retainer',isSub:true},
-          ].map((c,i)=>(
-            <div key={i} className="ccard" onClick={()=>checkout(c.sk,c.isSub?'subscription':'payment')}>
-              <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(48px,5vw,72px)',fontWeight:300,color:'rgba(139,115,64,.06)',position:'absolute',top:-8,right:12,lineHeight:1}}>{c.num}</div>
-              <div style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(20px,2vw,28px)',fontWeight:700,color:'#0A0806',marginBottom:8,position:'relative'}}>{c.name}</div>
-              <div style={{fontSize:13,color:'rgba(10,8,6,.45)',lineHeight:1.7,position:'relative',marginBottom:16}}>{c.desc}</div>
-              <div style={{fontFamily:'DM Mono,monospace',fontSize:'clamp(16px,1.8vw,22px)',color:'#8B7340',position:'relative'}}>{c.price}</div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    {/* ======= MEET THE FOUNDER ======= */}
-    <section style={{position:'relative',padding:'clamp(80px,10vw,140px) clamp(20px,4vw,80px)',overflow:'hidden'}}>
-      <img src={`${SB}/hero-bg.jpg`} alt="" style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.18,filter:'sepia(.15)'}}/>
-      <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,rgba(10,8,6,.95) 0%,rgba(10,8,6,.7) 50%,rgba(10,8,6,.3) 100%)'}}/>
-      <div style={{position:'relative',zIndex:1,maxWidth:580}}>
-        <div className="rv" style={{fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.4em',color:'#C9A84C',marginBottom:16}}>THE FOUNDER</div>
-        <h2 className="rv d1" style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(32px,5vw,64px)',fontWeight:400,lineHeight:1.1,marginBottom:20}}>Meet Our <em style={{fontStyle:'italic',color:'#E8D5A3'}}>Founder</em></h2>
-        <p className="rv d2" style={{fontFamily:'Cormorant Garamond,serif',fontSize:'clamp(16px,1.8vw,22px)',fontWeight:300,fontStyle:'italic',color:'#E8D5A3',marginBottom:24,lineHeight:1.5}}>Building Tomorrow&#39;s Leaders</p>
-        <p className="rv d3" style={{fontSize:14,color:'rgba(242,235,224,.45)',lineHeight:1.8,marginBottom:32}}>57+ brands. 8 cities. 198 AI agents. 34 automated departments. $0 in VC. Built from nothing but vision, systems, and relentless execution. This is The Lifestyle University — the institution built by an operator, for operators.</p>
-        <a className="rv d4" href="#apply" style={{display:'inline-block',fontFamily:'DM Mono,monospace',fontSize:10,letterSpacing:'.2em',color:'#C9A84C',border:'1px solid rgba(201,168,76,.3)',padding:'14px 36px',textDecoration:'none'}}>LEARN MORE</a>
-      </div>
-    </section>
-
-    {/* ======= APPLY / ENROLL ======= */}
-    <section id="apply" style={{padding:'clamp(80px,10vw,140px) clamp(20px,4vw,80px)',textAlign:'center',position:'relative'}}>
-      <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:500,height:500,borderRadius:'50%',border:'1px solid rgba(201,168,76,.04)',pointerEvents:'none'}}/>
-      <div className="rv" style={{fontSize:40,color:'#C9A84C',marginBottom:20}}>&#9878;</div>
-      <h2 className="rv d1" style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(32px,6vw,72px)',fontWeight:400,lineHeight:1.05,marginBottom:16}}>Ready to build<br/>your <em style={{fontStyle:'italic',color:'#E8D5A3'}}>empire?</em></h2>
-      <p className="rv d2" style={{fontSize:15,color:'rgba(242,235,224,.4)',maxWidth:480,margin:'0 auto 40px',lineHeight:1.7}}>10 schools. 30 programs. 5 membership tiers. The exact systems behind a 57-brand enterprise. Apply today.</p>
-      {sent?(
-        <div className="rv" style={{padding:40}}>
-          <div style={{fontSize:40,color:'#C9A84C',marginBottom:16}}>&#9878;</div>
-          <div style={{fontFamily:'Playfair Display,serif',fontSize:24}}>Application Received.</div>
-          <div style={{fontSize:13,color:'rgba(242,235,224,.4)',marginTop:8}}>Check your email for next steps.</div>
-        </div>
-      ):(
-        <form className="rv d3" onSubmit={doSubmit} style={{maxWidth:440,margin:'0 auto',display:'flex',flexDirection:'column',gap:12}}>
-          {[{ph:'Full Name',k:'name',type:'text',req:true},{ph:'Email',k:'email',type:'email',req:true},{ph:'Phone',k:'phone',type:'tel',req:false}].map(f=>(
-            <input key={f.k} type={f.type} placeholder={f.ph} required={f.req} value={fd[f.k]} onChange={e=>setFd({...fd,[f.k]:e.target.value})} style={{width:'100%',background:'rgba(242,235,224,.04)',border:'1px solid rgba(201,168,76,.1)',padding:'16px 20px',color:'#F2EBE0',fontSize:14,fontFamily:'DM Sans',outline:'none'}}/>
-          ))}
-          <select value={fd.industry} onChange={e=>setFd({...fd,industry:e.target.value})} required style={{width:'100%',background:'rgba(242,235,224,.04)',border:'1px solid rgba(201,168,76,.1)',padding:'16px 20px',color:fd.industry?'#F2EBE0':'rgba(242,235,224,.3)',fontSize:14,fontFamily:'DM Sans',outline:'none',appearance:'none'}}>
-            <option value="" style={{background:'#0A0806'}}>Select Your School</option>
-            {['Business & Ownership','Brand & Influence','Wealth & Negotiation','Lifestyle & Power','Systems & Automation','Hospitality & Culture','Commerce & Product','Growth & Promotion'].map(s=><option key={s} value={s.toLowerCase().replace(/\s+&\s+/g,'_')} style={{background:'#0A0806'}}>{s}</option>)}
-          </select>
-          <button type="submit" disabled={sub} style={{width:'100%',fontFamily:'Playfair Display,serif',fontSize:14,fontWeight:600,letterSpacing:'.12em',textTransform:'uppercase',padding:18,background:'linear-gradient(135deg,#C9A84C,#E8D5A3)',color:'#0A0806',border:'none',cursor:'pointer',boxShadow:'0 4px 30px rgba(201,168,76,.3)',opacity:sub?.5:1}}>{sub?'SUBMITTING...':'APPLY NOW'}</button>
-          <div style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.2em',color:'rgba(242,235,224,.15)'}}>SECURE CHECKOUT VIA STRIPE · FREE TRAINING INCLUDED</div>
-        </form>
-      )}
-    </section>
-
-    {/* ======= FOOTER ======= */}
-    <footer style={{padding:'40px clamp(20px,4vw,80px)',borderTop:'1px solid rgba(201,168,76,.08)'}}>
-      <div style={{maxWidth:1400,margin:'0 auto',display:'flex',flexWrap:'wrap',justifyContent:'space-between',alignItems:'center',gap:20}}>
-        <div>
-          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
-            <span style={{fontSize:16,color:'#C9A84C'}}>&#9878;</span>
-            <span style={{fontFamily:'Playfair Display,serif',fontSize:14}}>The Lifestyle University</span>
+            <div className="flex items-center gap-6 text-cream/15 text-[9px] font-mono">
+              <span>Privacy Policy</span>
+              <span>Terms of Service</span>
+            </div>
           </div>
-          <div style={{fontFamily:'DM Mono,monospace',fontSize:8,letterSpacing:'.2em',color:'rgba(242,235,224,.15)'}}>&#169; 2026 DR. DORSEY · THE KOLLECTIVE HOSPITALITY GROUP</div>
+          <div className="text-center mt-8">
+            <p className="text-cream/15 text-[10px] tracking-[0.1em] font-mono">&copy; 2026 Dr. DoLo Dorsey &mdash; The Kollective Hospitality Group</p>
+          </div>
         </div>
-        <div style={{display:'flex',gap:20,flexWrap:'wrap'}}>
-          {['Schools','Programs','Admissions','Partnerships','About','Contact','FAQs'].map(l=>(
-            <a key={l} href="#" style={{fontFamily:'DM Mono,monospace',fontSize:9,letterSpacing:'.1em',color:'rgba(242,235,224,.2)',textDecoration:'none'}}>{l}</a>
-          ))}
+      </footer>
+
+      {typeof window !== 'undefined' && new URLSearchParams(window?.location?.search).get('success') && (
+        <div className="fixed top-0 left-0 right-0 z-[10001] bg-green-900/80 backdrop-blur-sm px-6 py-4 text-center">
+          <p className="text-green-300 text-sm tracking-wider font-mono">PAYMENT SUCCESSFUL &mdash; Welcome to The Lifestyle University.</p>
         </div>
-        <div style={{fontFamily:'DM Mono,monospace',fontSize:8,color:'rgba(242,235,224,.12)'}}>Privacy Policy · Terms of Service</div>
-      </div>
-    </footer>
-  </>)
+      )}
+    </main>
+  )
 }
