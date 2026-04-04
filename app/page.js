@@ -33,10 +33,22 @@ export default function Home() {
   const [activeSchool, setActiveSchool] = useState(0)
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', industry: '' })
   const [formSent, setFormSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setFormSent(true)
+    setSubmitting(true)
+    try {
+      await fetch('/api/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      setFormSent(true)
+    } catch (err) {
+      console.error(err)
+    }
+    setSubmitting(false)
   }
 
   return (
@@ -252,8 +264,8 @@ export default function Home() {
                 <option value="" className="bg-bg">Select Your Industry</option>
                 {SCHOOLS.map(s => <option key={s.key} value={s.key} className="bg-bg">{s.name}</option>)}
               </select>
-              <button type="submit" className="w-full py-4 bg-gold text-bg font-body font-bold text-sm tracking-widest hover:bg-gold/90 transition-all">
-                GET EARLY ACCESS
+              <button type="submit" disabled={submitting} className="w-full py-4 bg-gold text-bg font-body font-bold text-sm tracking-widest hover:bg-gold/90 transition-all disabled:opacity-50">
+                {submitting ? 'SUBMITTING...' : 'GET EARLY ACCESS'}
               </button>
               <p className="text-center text-cream/20 text-[10px] font-mono tracking-wider">FREE TRAINING INCLUDED · NO SPAM EVER</p>
             </form>
