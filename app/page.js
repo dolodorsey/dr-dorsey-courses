@@ -2,24 +2,24 @@
 import { useState, useEffect, useRef } from 'react'
 
 const STRIPE = {
-  lifestyle_pass_monthly:'price_1TIJHtKUVDzsdWUxSHmG8MIY',lifestyle_pass_annual:'price_1TIJHuKUVDzsdWUxK7S8Qy6A',
-  operator_monthly:'price_1TIJIbKUVDzsdWUxQd9TWNHo',operator_annual:'price_1TIJIbKUVDzsdWUx7qpwotgk',
-  inner_circle_monthly:'price_1TIJIbKUVDzsdWUx5QPHt9N2',inner_circle_annual:'price_1TIJIcKUVDzsdWUxrV9cxWMq',
-  event_money_machine:'price_1TIJIcKUVDzsdWUxlLoXpTQ8',nightlife_money:'price_1TIJIdKUVDzsdWUxz5ezooe4',
-  lifestyle_specialist:'price_1TIJIeKUVDzsdWUx2FQYkyeB',culture_ecom:'price_1TIJIfKUVDzsdWUxXpcYgQml',
-  automate_biz_os:'price_1TIJIgKUVDzsdWUxptHr3Qk8',founder_empire:'price_1TIJIhKUVDzsdWUxvnxipPG9',
-  restaurant_qsr_blueprint:'price_1TIJIiKUVDzsdWUxsikwYU6p',audience_to_income:'price_1TIJIjKUVDzsdWUxfrNM0I72',
-  service_scale_blueprint:'price_1TIJIkKUVDzsdWUxS928s5Y4',app_launch_blueprint:'price_1TIJIlKUVDzsdWUxRY6X6Ybh',
-  experience_blueprint:'price_1TIJImKUVDzsdWUxIcYpgAQ3',brand_monetization:'price_1TIJInKUVDzsdWUxvGh8DxZT',
-  ai_operator:'price_1TIJIoKUVDzsdWUx9ez8Pb7B',offer_architecture:'price_1TIJIpKUVDzsdWUxhM9FdtAq',
-  venue_revenue:'price_1TIJIqKUVDzsdWUxAbzwS9Vo',content_authority:'price_1TIJIrKUVDzsdWUxXQVBEsBM',
-  merch_moves:'price_1TIJIrKUVDzsdWUxQDdIa9pN',menu_engineering:'price_1TIJIsKUVDzsdWUx0XBi7r9z',
-  dayparty_launch:'price_1TIJItKUVDzsdWUxDwkwJHtn',sponsor_sales:'price_1TIJIuKUVDzsdWUx5cljIaNZ',
-  shopify_drop_systems:'price_1TIJIvKUVDzsdWUxA0nkZKnW',sop_builder:'price_1TIJIwKUVDzsdWUxdhjFGMOl',
-  authority_design:'price_1TIJIxKUVDzsdWUxBpkDMfeR',vip_experience:'price_1TIJIyKUVDzsdWUx6jjoO3vY',
-  hospitality_brand_builder:'price_1TIJIzKUVDzsdWUxUq5Izjiz',crm_followup:'price_1TIJJ0KUVDzsdWUxk8RAX83L',
-  strategy_call:'price_1TIJJ1KUVDzsdWUx9aJVErFU',brand_audit:'price_1TIJJ2KUVDzsdWUxOJhlreiJ',
-  full_day:'price_1TIJJ2KUVDzsdWUxccLV6EgK',retainer:'price_1TIJJ3KUVDzsdWUxIesNwBy3',
+  lifestyle_pass_monthly:'price_1TJ4vBKUVDzsdWUxUoKkKYBe',lifestyle_pass_annual:'price_1TJ4vBKUVDzsdWUxt06y2ES9',
+  operator_monthly:'price_1TJ4vBKUVDzsdWUx3Poj9UCc',operator_annual:'price_1TJ4vCKUVDzsdWUxG8TsSxDr',
+  inner_circle_monthly:'price_1TJ4vCKUVDzsdWUx641KpnKu',inner_circle_annual:'price_1TJ4vCKUVDzsdWUx03kTDH8C',
+  event_money_machine:'price_1TJ4uMKUVDzsdWUxxVrfUz1V',nightlife_money:'price_1TJ4uLKUVDzsdWUx2g9xHm82',
+  lifestyle_specialist:'price_1TJ4uMKUVDzsdWUx3LzL2eXI',culture_ecom:'price_1TJ4uMKUVDzsdWUxxgalPwSK',
+  automate_biz_os:'price_1TJ4uLKUVDzsdWUxss8wLEZz',founder_empire:'price_1TJ4uKKUVDzsdWUx1d6u4Yk3',
+  restaurant_qsr_blueprint:'price_1TJ4uNKUVDzsdWUxzGHsOZPn',audience_to_income:'price_1TJ4uNKUVDzsdWUx80QRjFcZ',
+  service_scale_blueprint:'price_1TJ4uOKUVDzsdWUxTM84Khpr',app_launch_blueprint:'price_1TJ4uOKUVDzsdWUxrvej8sMo',
+  experience_blueprint:'price_1TJ4ulKUVDzsdWUxDqXYpoOl',brand_monetization:'price_1TJ4ulKUVDzsdWUxo8AMxOrp',
+  ai_operator:'price_1TJ4ukKUVDzsdWUxIR1Q63Rz',offer_architecture:'price_1TJ4ukKUVDzsdWUxIlZvc0aU',
+  venue_revenue:'price_1TJ4umKUVDzsdWUxLVJGPU8A',content_authority:'price_1TJ4umKUVDzsdWUxR5WnkKEa',
+  merch_moves:'price_1TJ4unKUVDzsdWUx5LzclHoW',menu_engineering:'price_1TJ4unKUVDzsdWUxHDO4wV98',
+  dayparty_launch:'price_1TJ4unKUVDzsdWUxjDVshpo4',sponsor_sales:'price_1TJ4uoKUVDzsdWUxQkOPHKGr',
+  shopify_drop_systems:'price_1TJ4uoKUVDzsdWUxtPGbTLMk',sop_builder:'price_1TJ4upKUVDzsdWUxtQh7x60e',
+  authority_design:'price_1TJ4upKUVDzsdWUx5RBuHVvu',vip_experience:'price_1TJ4uqKUVDzsdWUxZwjskR9S',
+  hospitality_brand_builder:'price_1TJ4uqKUVDzsdWUxwqAgeYVE',crm_followup:'price_1TJ4upKUVDzsdWUxevoBZA8B',
+  strategy_call:'price_1TJ4vQKUVDzsdWUx28uoCGbB',brand_audit:'price_1TJ4vRKUVDzsdWUxTOCqKrOC',
+  full_week:'price_1TJ4vRKUVDzsdWUxWu3nkQMu',retainer:'price_1TJ4vRKUVDzsdWUxLhXf8It8',
 }
 
 const SB = 'https://dzlmtvodpyhetvektfuo.supabase.co/storage/v1/object/public/brand-graphics/dr_dorsey/website'
@@ -32,38 +32,38 @@ const PILLARS = [
 ]
 
 const SCHOOLS = [
-  { name:'Experience Economy', flagship:'Event Money Machine', sk:'event_money_machine', price:'$1,997', desc:'Launch, scale, and monetize events. Built from running 15+ event brands.', img:'thesis-bg.jpg' },
-  { name:'Hospitality & Nightlife', flagship:'Nightlife Money Machine', sk:'nightlife_money', price:'$1,997', desc:'Build profitable nightlife brands and venue partnerships.', img:'rooftop-lounge.jpg' },
-  { name:'Personal Brand', flagship:'Lifestyle Specialist Blueprint', sk:'lifestyle_specialist', price:'$1,997', desc:'Turn your expertise and attention into scalable income.', img:'hero-bg.jpg' },
-  { name:'Automation & Systems', flagship:'Automate Your Business OS', sk:'automate_biz_os', price:'$2,497', desc:'Build the AI-powered operating system behind a real enterprise.', img:'luxury-venue.jpg' },
-  { name:'Food Brand Launch', flagship:'Restaurant & QSR Blueprint', sk:'restaurant_qsr_blueprint', price:'$1,997', desc:'Launch restaurants, food trucks, and QSR concepts that scale.', img:'penthouse-skyline.jpg' },
-  { name:'Audience Growth', flagship:'Audience to Income System', sk:'audience_to_income', price:'$1,497', desc:'Grow organically and convert followers into revenue.', img:'garden-district.jpg' },
-  { name:'Merch & E-Commerce', flagship:'Culture Brand E-Commerce', sk:'culture_ecom', price:'$1,997', desc:'Build culture-first e-commerce brands on Shopify.', img:'thesis-bg.jpg' },
-  { name:'Service Business', flagship:'Service Business Scale', sk:'service_scale_blueprint', price:'$1,497', desc:'Package expertise into offers that attract premium clients.', img:'luxury-venue.jpg' },
-  { name:'App Launch', flagship:'App Launch Blueprint', sk:'app_launch_blueprint', price:'$1,497', desc:'Go from idea to App Store without burning capital.', img:'hero-bg.jpg' },
-  { name:'Venue Development', flagship:'Venue Revenue Blueprint', sk:'venue_revenue', price:'$497', desc:'Program and monetize physical spaces for maximum revenue.', img:'rooftop-lounge.jpg' },
+  { name:'Experience Economy', flagship:'Event Money Machine', sk:'event_money_machine', price:'$2,997', desc:'Launch, scale, and monetize events. Built from running 15+ event brands.', img:'thesis-bg.jpg' },
+  { name:'Hospitality & Nightlife', flagship:'Nightlife Money Machine', sk:'nightlife_money', price:'$2,997', desc:'Build profitable nightlife brands and venue partnerships.', img:'rooftop-lounge.jpg' },
+  { name:'Personal Brand', flagship:'Lifestyle Specialist Blueprint', sk:'lifestyle_specialist', price:'$2,997', desc:'Turn your expertise and attention into scalable income.', img:'hero-bg.jpg' },
+  { name:'Automation & Systems', flagship:'Automate Your Business OS', sk:'automate_biz_os', price:'$3,997', desc:'Build the AI-powered operating system behind a real enterprise.', img:'luxury-venue.jpg' },
+  { name:'Food Brand Launch', flagship:'Restaurant & QSR Blueprint', sk:'restaurant_qsr_blueprint', price:'$2,997', desc:'Launch restaurants, food trucks, and QSR concepts that scale.', img:'penthouse-skyline.jpg' },
+  { name:'Audience Growth', flagship:'Audience to Income System', sk:'audience_to_income', price:'$2,497', desc:'Grow organically and convert followers into revenue.', img:'garden-district.jpg' },
+  { name:'Merch & E-Commerce', flagship:'Culture Brand E-Commerce', sk:'culture_ecom', price:'$2,997', desc:'Build culture-first e-commerce brands on Shopify.', img:'thesis-bg.jpg' },
+  { name:'Service Business', flagship:'Service Business Scale', sk:'service_scale_blueprint', price:'$2,497', desc:'Package expertise into offers that attract premium clients.', img:'luxury-venue.jpg' },
+  { name:'App Launch', flagship:'App Launch Blueprint', sk:'app_launch_blueprint', price:'$2,497', desc:'Go from idea to App Store without burning capital.', img:'hero-bg.jpg' },
+  { name:'Venue Development', flagship:'Venue Revenue Blueprint', sk:'venue_revenue', price:'$797', desc:'Program and monetize physical spaces for maximum revenue.', img:'rooftop-lounge.jpg' },
 ]
 
 const PROGRAMS = [
-  { name:'Event Money Machine', sk:'event_money_machine', price:'$1,997', cat:'Business & Ownership' },
-  { name:'Nightlife Money Machine', sk:'nightlife_money', price:'$1,997', cat:'Lifestyle & Power' },
-  { name:'Lifestyle Specialist', sk:'lifestyle_specialist', price:'$1,997', cat:'Brand & Influence' },
-  { name:'Automate Your Business OS', sk:'automate_biz_os', price:'$2,497', cat:'Systems & Automation' },
+  { name:'Event Money Machine', sk:'event_money_machine', price:'$2,997', cat:'Business & Ownership' },
+  { name:'Nightlife Money Machine', sk:'nightlife_money', price:'$2,997', cat:'Lifestyle & Power' },
+  { name:'Lifestyle Specialist', sk:'lifestyle_specialist', price:'$2,997', cat:'Brand & Influence' },
+  { name:'Automate Your Business OS', sk:'automate_biz_os', price:'$3,997', cat:'Systems & Automation' },
 ]
 
 const TIERS = [
   { name:'The Taste', price:'FREE', annual:null, sm:null, sa:null, features:['1 mini-lesson per school','Weekly newsletter','Public community','Free training library'], cta:'Start Free' },
-  { name:'Lifestyle Pass', price:'$29/mo', annual:'$249/yr', sm:'lifestyle_pass_monthly', sa:'lifestyle_pass_annual', features:['Full course library','Monthly live Q&A','Community access','Templates & playbooks','10% off events & merch'], cta:'Subscribe' },
-  { name:'The Operator', price:'$79/mo', annual:'$699/yr', sm:'operator_monthly', sa:'operator_annual', features:['Everything in Pass','Deep-dive masterclasses','Full SOP library','Private channel','Group coaching','20% off events & merch'], popular:true, cta:'Go Operator' },
-  { name:'Inner Circle', price:'$199/mo', annual:'$1,799/yr', sm:'inner_circle_monthly', sa:'inner_circle_annual', features:['Everything in Operator','Monthly 1-on-1 (30 min)','VIP event access','Direct DM access','Co-branding opps','30% off everything'], cta:'Apply Now' },
+  { name:'Lifestyle Pass', price:'$49/mo', annual:'$449/yr', sm:'lifestyle_pass_monthly', sa:'lifestyle_pass_annual', features:['Full course library','Monthly live Q&A','Community access','Templates & playbooks','10% off events & merch'], cta:'Subscribe' },
+  { name:'The Operator', price:'$129/mo', annual:'$1,199/yr', sm:'operator_monthly', sa:'operator_annual', features:['Everything in Pass','Deep-dive masterclasses','Full SOP library','Private channel','Group coaching','20% off events & merch'], popular:true, cta:'Go Operator' },
+  { name:'Inner Circle', price:'$349/mo', annual:'$2,999/yr', sm:'inner_circle_monthly', sa:'inner_circle_annual', features:['Everything in Operator','Monthly 1-on-1 (30 min)','VIP event access','Direct DM access','Co-branding opps','30% off everything'], cta:'Apply Now' },
   { name:'Apprentice', price:'$2,500+', annual:'Per cohort', sm:null, sa:null, features:['8-week live cohort','Choose your track','KHG assignments','Certificate','2 private 1-on-1s','Alumni network','100% access'], cta:'Apply' },
 ]
 
 const CONSULTS = [
-  { name:'Strategy Call', price:'$250', dur:'30 min', sk:'strategy_call', desc:'Pick one topic. Direct operator-level advice.' },
-  { name:'Brand Audit', price:'$500', dur:'60 min + report', sk:'brand_audit', desc:'Full written audit. Competitive analysis. Action plan.' },
-  { name:'Full Day', price:'$2,500', dur:'4 hours', sk:'full_day', desc:'Deep dive. Walk away with a complete action plan.' },
-  { name:'Monthly Retainer', price:'$5,000/mo', dur:'Ongoing', sk:'retainer', desc:'Two calls/month. Async access. Quarterly review.', isSub:true },
+  { name:'Strategy Call', price:'$497', dur:'30 min', sk:'strategy_call', desc:'Pick one topic. Direct operator-level advice.' },
+  { name:'Brand Audit', price:'$997', dur:'60 min + report', sk:'brand_audit', desc:'Full written audit. Competitive analysis. Action plan.' },
+  { name:'Full Week', price:'$4,997', dur:'5 days', sk:'full_week', desc:'One full week immersive. Walk away with a complete action plan, SOPs, and 60-day support.' },
+  { name:'Monthly Retainer', price:'$7,500/mo', dur:'Ongoing', sk:'retainer', desc:'Two calls/month. Async access. Quarterly review.', isSub:true },
 ]
 
 const RESULTS = [
