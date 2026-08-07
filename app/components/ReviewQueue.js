@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LMS_FUNCTION, SUPABASE_KEY } from "../lib/tlu";
+import { LMS_FUNCTION } from "../lib/tlu";
 
 const SESSION_KEY="tlu_session";
-function readSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null")}catch{return null}}
-async function invoke(token,body){const res=await fetch(LMS_FUNCTION,{method:"POST",headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data?.error||"Review request failed");return data}
+function readSession(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(!s)return null;if(s.refresh_token||(s.access_token&&s.access_token!=="cookie-session")){localStorage.removeItem(SESSION_KEY);return null}return s.authenticated||s.access_token?{authenticated:true,access_token:"cookie-session",user:s.user||null}:null}catch{return null}}
+async function invoke(token,body){const res=await fetch(LMS_FUNCTION,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401){localStorage.removeItem(SESSION_KEY);window.location.href="/login?next=/admin/review"}throw new Error(data?.error||"Review request failed")}return data}
 
 export default function ReviewQueue(){const[queue,setQueue]=useState(null),[error,setError]=useState("");async function load(){const s=readSession();if(!s?.access_token){window.location.href="/login?next=/admin/review";return}try{const d=await invoke(s.access_token,{action:"admin_review_queue"});setQueue(d.queue||[])}catch(e){setError(e.message)}}useEffect(()=>{load()},[]);if(error)return <div className="status-card error"><small>REVIEW ACCESS</small><h2>{error}</h2></div>;if(!queue)return <div className="status-card loading-card"><small>PROOF REVIEW</small><h2>Loading reviewer queue…</h2></div>;return <div className="review-stack"><section className="review-overview"><article><small>OPEN PROOF BUILDS</small><b>{queue.filter(i=>i.status==="submitted").length}</b></article><article><small>REVISION QUEUE</small><b>{queue.filter(i=>i.status==="needs_revision").length}</b></article><article><small>REVIEW STANDARD</small><b>80%</b></article></section>{queue.length?queue.map(item=><ReviewCard key={item.id} item={item} onDone={load}/>):<div className="review-empty"><small>QUEUE CLEAR</small><h2>No Proof Builds are waiting for review.</h2><p>New submissions will appear here automatically.</p></div>}</div>}
 
