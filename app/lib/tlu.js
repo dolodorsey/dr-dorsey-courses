@@ -1,8 +1,10 @@
 export const SUPABASE_URL = "https://dzlmtvodpyhetvektfuo.supabase.co";
 export const SUPABASE_KEY = "sb_publishable_ekvoOK6QQ05dUZuWgzQfUw_2RgbWPFR";
-export const LMS_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-lms`;
-export const COMMERCE_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-commerce`;
+export const LMS_EDGE_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-lms`;
+export const COMMERCE_EDGE_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-commerce`;
 export const CREDENTIAL_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-credential`;
+export const LMS_FUNCTION = "/api/tlu/lms";
+export const COMMERCE_FUNCTION = "/api/tlu/commerce";
 
 const baseHeaders = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
 
