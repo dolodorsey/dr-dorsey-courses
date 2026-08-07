@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { COMMERCE_FUNCTION, SUPABASE_KEY } from "../lib/tlu";
+import { COMMERCE_FUNCTION } from "../lib/tlu";
 
 const SESSION_KEY = "tlu_session";
 const GUARD_WINDOW_MS = 120000;
 
-function readSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); }
-  catch { return null; }
+function hasSafeSessionMarker() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    if (!raw) return false;
+    if (raw.refresh_token || (raw.access_token && raw.access_token !== "cookie-session")) {
+      localStorage.removeItem(SESSION_KEY);
+      return false;
+    }
+    return Boolean(raw.authenticated || raw.access_token);
+  } catch { return false; }
 }
 
 export default function AutoCheckout({ productSlug, enabled = false }) {
@@ -16,10 +23,7 @@ export default function AutoCheckout({ productSlug, enabled = false }) {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!enabled || !productSlug) return;
-    const session = readSession();
-    if (!session?.access_token) return;
-
+    if (!enabled || !productSlug || !hasSafeSessionMarker()) return;
     const guardKey = `tlu_checkout_resume:${productSlug}`;
     const lastAttempt = Number(sessionStorage.getItem(guardKey) || 0);
     if (lastAttempt && Date.now() - lastAttempt < GUARD_WINDOW_MS) {
@@ -31,22 +35,20 @@ export default function AutoCheckout({ productSlug, enabled = false }) {
     setState("working");
     fetch(COMMERCE_FUNCTION, {
       method: "POST",
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${session.access_token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        action: "create_checkout",
-        product_slug: productSlug,
-        origin: window.location.origin
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "create_checkout", product_slug: productSlug, origin: window.location.origin })
     })
       .then(async (res) => {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          localStorage.removeItem(SESSION_KEY);
+          window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}&product=${encodeURIComponent(productSlug)}`;
+          return null;
+        }
         if (!res.ok) throw new Error(data?.error || "Unable to resume checkout");
         if (!data?.checkout_url) throw new Error("Secure checkout URL was not returned");
         window.location.replace(data.checkout_url);
+        return data;
       })
       .catch((error) => {
         sessionStorage.removeItem(guardKey);
