@@ -3,9 +3,10 @@ import { LoginPanel } from "../components/StudentActions";
 
 export const dynamic = "force-dynamic";
 
-export default function LoginPage({ searchParams }) {
-  const next = searchParams?.next || "/dashboard";
-  const product = searchParams?.product || "";
+export default async function LoginPage({ searchParams }) {
+  const query = await searchParams;
+  const next = query?.next || "/dashboard";
+  const product = query?.product || "";
   return <main className="auth-page auth-page-v2">
     <div className="utility-strip"><span>THE LIFESTYLE UNIVERSITY</span><span>PRIVATE OPERATOR ACCESS</span><span>AUTHORIZED PROFILES ONLY</span></div>
     <nav className="nav nav-premium"><Link className="brand" href="/"><b>THE LIFESTYLE</b><span>UNIVERSITY</span></Link><div><Link href="/#programs">Flagship Index</Link><Link href="/#resources">Tool Vault</Link></div></nav>
