@@ -1,6 +1,7 @@
 name: TLU security and build check
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - feat/lifestyle-university-lms
