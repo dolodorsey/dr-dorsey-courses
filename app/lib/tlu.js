@@ -9,7 +9,7 @@ export async function supabaseRest(path, init = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...init,
     headers: { ...baseHeaders, ...(init.headers || {}) },
-    next: { revalidate: 120 },
+    cache: "no-store",
   });
   if (!res.ok) throw new Error(`Supabase request failed: ${res.status}`);
   return res.json();
