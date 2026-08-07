@@ -2,5 +2,10 @@ import Link from "next/link";
 import { StudentDashboard } from "../components/StudentActions";
 
 export default function DashboardPage() {
-  return <main><nav className="nav"><Link className="brand" href="/"><b>THE LIFESTYLE</b><span>UNIVERSITY</span></Link><div><Link href="/">Catalog</Link><Link href="/#resources">Resource Vault</Link></div></nav><section className="portal-hero"><small>STUDENT COMMAND CENTER</small><h1>KEEP BUILDING.</h1><p>Your programs, progress, next-best moves and operating milestones in one place.</p></section><section className="section dashboard-section"><StudentDashboard /></section></main>;
+  return <main className="site-shell console-page">
+    <div className="utility-strip"><span>THE LIFESTYLE UNIVERSITY</span><span>PRIVATE OPERATOR ENVIRONMENT</span><span>BUILD · MEASURE · ADVANCE</span></div>
+    <nav className="nav nav-premium"><Link className="brand" href="/"><b>THE LIFESTYLE</b><span>UNIVERSITY</span></Link><div><Link href="/#programs">Flagship Index</Link><Link href="/#resources">Tool Vault</Link><Link className="console-link" href="/dashboard">Operator Console</Link></div></nav>
+    <section className="portal-hero portal-hero-v2"><div><small>OPERATOR CONSOLE</small><h1>YOUR BUILD<br/><em>PORTFOLIO.</em></h1></div><p>Programs, Build Progress, system recommendations and proof milestones—organized around what moves next.</p></section>
+    <section className="section dashboard-section"><StudentDashboard /></section>
+  </main>;
 }
