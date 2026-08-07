@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function CheckoutButton({ priceId, programKey, label = 'Enroll Now', className = '' }) {
+export default function CheckoutButton({ priceId, programKey, label = 'Enroll Now', mode = 'payment', className = '' }) {
   const [loading, setLoading] = useState(false)
 
   async function checkout() {
@@ -12,7 +12,7 @@ export default function CheckoutButton({ priceId, programKey, label = 'Enroll No
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, mode: 'payment', programKey }),
+        body: JSON.stringify({ priceId, mode, programKey }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Checkout failed')
