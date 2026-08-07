@@ -1,5 +1,6 @@
 import './globals.css'
 import './premium.css'
+import './platform.css'
 
 export const metadata = {
   title: 'The Lifestyle University | Operator Education',
