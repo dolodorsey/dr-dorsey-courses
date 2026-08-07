@@ -1,11 +1,12 @@
 import './globals.css'
+import './premium.css'
 
 export const metadata = {
-  title: 'Dr. Dorsey Courses | The Lifestyle University',
-  description: 'Real operator-level courses on events, hospitality, branding, automation, and e-commerce. Built from experience, not theory. 10 Industry Schools. 6 Founding Colleges.',
+  title: 'The Lifestyle University | Operator Education',
+  description: 'Premium operator education for founders, curators, creators and executives building revenue systems across culture, hospitality, media, products, services and technology.',
   openGraph: {
-    title: 'Dr. Dorsey Courses | The Lifestyle University',
-    description: 'Real courses on the things Dr. Dorsey has actually built. Events, hospitality, branding, automation, e-commerce. Not theory. Receipts.',
+    title: 'The Lifestyle University | Build What Pays',
+    description: '10 flagship operator programs. 320 Plays. Stage Gates, Proof Builds, Tool Vaults and proof-based Operator Credentials.',
     type: 'website',
   }
 }
