@@ -48,7 +48,7 @@ export async function getConsultations() {
 }
 
 export async function getMembershipTiers() {
-  return readTable('lu_subscription_tiers', 'select=tier_name,tier_key,monthly_price_cents,annual_price_cents,annual_savings_display,includes,perks,event_discount_pct,merch_discount_pct,consultation_included,consultation_minutes,consultation_frequency,community_access,sort_order,stripe_monthly_price_id,stripe_annual_price_id&status=eq.active&order=sort_order.asc')
+  return readTable('lu_subscription_tiers', 'select=tier_name,tier_key,monthly_price_cents,annual_price_cents,annual_savings_display,includes,perks,event_discount_pct,merch_discount_pct,consultation_included,consultation_minutes,consultation_frequency,community_access,stripe_monthly_price_id,stripe_annual_price_id&status=eq.active&order=monthly_price_cents.asc.nullslast')
 }
 
 export { SUPABASE_URL, SUPABASE_KEY }
