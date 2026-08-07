@@ -13,9 +13,12 @@ export const metadata = {
   }
 }
 
+const legacySessionCleanup = `try{const k='tlu_session';const s=JSON.parse(localStorage.getItem(k)||'null');if(s&&(s.refresh_token||(s.access_token&&s.access_token!=='cookie-session'))){localStorage.removeItem(k)}}catch(e){try{localStorage.removeItem('tlu_session')}catch(_){}}`;
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head><script dangerouslySetInnerHTML={{ __html: legacySessionCleanup }} /></head>
       <body>
         <div className="grain" />
         {children}
