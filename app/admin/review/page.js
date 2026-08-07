@@ -1,0 +1,4 @@
+import Link from "next/link";
+import ReviewQueue from "../../components/ReviewQueue";
+
+export default function ReviewPage(){return <main className="site-shell review-page"><div className="utility-strip"><span>THE LIFESTYLE UNIVERSITY</span><span>PROOF REVIEW DESK</span><span>ADMIN ACCESS</span></div><nav className="nav nav-premium"><Link className="brand" href="/"><b>THE LIFESTYLE</b><span>UNIVERSITY</span></Link><div><Link href="/dashboard">Operator Console</Link><Link href="/vault">Tool Vault</Link><Link className="console-link" href="/admin/review">Review Desk</Link></div></nav><section className="review-hero"><small>THE REVIEW DESK</small><h1>GRADE THE PROOF.<br/><em>PROTECT THE CREDENTIAL.</em></h1><p>Manual Proof Builds are reviewed against the published rubric. Passing decisions trigger Operator Credential eligibility in Supabase.</p></section><section className="section review-section"><ReviewQueue/></section></main>}
