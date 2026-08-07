@@ -1,19 +1,25 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckoutButton } from "../../components/StudentActions";
+import AutoCheckout from "../../components/AutoCheckout";
 import { getCourse, money } from "../../lib/tlu";
 import { LINGO, stageLabel } from "../../lib/lingo";
 
 export const dynamic = "force-dynamic";
 
-export default async function CoursePage({ params }) {
-  const course = await getCourse(params.slug);
+export default async function CoursePage({ params, searchParams }) {
+  const route = await params;
+  const query = await searchParams;
+  const course = await getCourse(route.slug);
   if (!course) notFound();
+  const productSlug = `course-${course.slug}`;
+  const resumeCheckout = query?.product === productSlug;
   const curriculum = Array.isArray(course.curriculum_json) ? course.curriculum_json : [];
   const outcomes = Array.isArray(course.learning_outcomes) ? course.learning_outcomes : [];
   const bonuses = Array.isArray(course.bonuses) ? course.bonuses : [];
   const faqs = Array.isArray(course.course_faq) ? course.course_faq : [];
   return <main className="site-shell program-detail">
+    <AutoCheckout productSlug={productSlug} enabled={resumeCheckout} />
     <div className="utility-strip"><span>{course.school_name || "OPERATOR STUDIES"}</span><span>FLAGSHIP PROGRAM</span><span>PROOF-BASED CREDENTIAL</span></div>
     <nav className="nav nav-premium"><Link className="brand" href="/"><b>THE LIFESTYLE</b><span>UNIVERSITY</span></Link><div><Link href="/#programs">Flagships</Link><Link href="/#resources">Tool Vault</Link><Link href="/#consultations">Strategy Room</Link><Link className="console-link" href="/dashboard">Operator Console</Link></div></nav>
 
@@ -23,7 +29,7 @@ export default async function CoursePage({ params }) {
       <h1>{course.title}</h1>
       <p className="course-subtitle">{course.subtitle || course.transformation_promise}</p>
       <div className="course-hero-grid course-hero-grid-v2"><div><span>32</span><small>PLAYS</small></div><div><span>8</span><small>STAGES</small></div><div><span>8</span><small>STAGE GATES</small></div><div><span>1</span><small>PROOF BUILD</small></div><div><span>{course.completion_threshold || 80}%</span><small>CREDENTIAL STANDARD</small></div></div>
-      <div className="enroll-box enroll-box-v2"><div><small>PROGRAM INVESTMENT</small><b>{course.price_label || money(course.price_cents)}</b><p>One-time access · lifetime program library · Tool Vault included</p></div><CheckoutButton productSlug={`course-${course.slug}`} label="Unlock program access" /></div>
+      <div className="enroll-box enroll-box-v2"><div><small>PROGRAM INVESTMENT</small><b>{course.price_label || money(course.price_cents)}</b><p>One-time access · lifetime program library · Tool Vault included</p></div><CheckoutButton productSlug={productSlug} label="Unlock program access" /></div>
     </section>
 
     <section className="program-principle"><div><small>THE STANDARD</small><h2>WATCH LESS.<br/><em>BUILD MORE.</em></h2></div><p>Every Stage contains four Plays. Every Play ends in a Build. Every Stage closes with a Gate. The program ends with a Proof Build that demonstrates you can actually operate the system.</p></section>
@@ -40,6 +46,6 @@ export default async function CoursePage({ params }) {
 
     {faqs.length ? <section className="section faq faq-v2"><header className="section-head section-head-v2"><div><small>BEFORE YOU ENTER</small><p>Program access, expectations and operating standard.</p></div><h2>KNOW THE PROGRAM.<br/><em>THEN COMMIT.</em></h2></header><div>{faqs.map((f,i)=><details key={i}><summary><span>{String(i+1).padStart(2,"0")}</span>{f.question || f.q}</summary><p>{f.answer || f.a}</p></details>)}</div></section> : null}
 
-    <section className="closing closing-v2"><small>{course.title}</small><h2>YOUR NEXT MOVE<br/><em>SHOULD CREATE LEVERAGE.</em></h2><p>Unlock the program, enter Stage 01 and finish the first Build before you consume anything else.</p><CheckoutButton productSlug={`course-${course.slug}`} label={`Unlock ${course.title}`} /></section>
+    <section className="closing closing-v2"><small>{course.title}</small><h2>YOUR NEXT MOVE<br/><em>SHOULD CREATE LEVERAGE.</em></h2><p>Unlock the program, enter Stage 01 and finish the first Build before you consume anything else.</p><CheckoutButton productSlug={productSlug} label={`Unlock ${course.title}`} /></section>
   </main>;
 }
