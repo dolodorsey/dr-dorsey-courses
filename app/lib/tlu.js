@@ -22,8 +22,8 @@ export async function getCatalog() {
       supabaseRest("tlu_faqs?published=eq.true&select=*&order=sort_order.asc"),
       supabaseRest("tlu_service_offers?active=eq.true&select=slug,title,category,description,starting_price_cents,price_label,turnaround_label,sort_order&order=sort_order.asc"),
       supabaseRest("tlu_consultation_offers?published=eq.true&select=slug,name,offer_kind,duration_minutes,price_cents,price_label,description,sort_order&order=sort_order.asc"),
-      supabaseRest("tlu_templates?published=eq.true&select=slug,title,description,category,file_type,access_level,course_slug,preview_text,sort_order&order=sort_order.asc&limit=40"),
-      supabaseRest("tlu_glossary_terms?published=eq.true&select=term,definition,category&order=term.asc&limit=60"),
+      supabaseRest("tlu_templates?published=eq.true&select=slug,title,description,category,file_type,access_level,course_slug,preview_text,sort_order&order=sort_order.asc&limit=200"),
+      supabaseRest("tlu_glossary_terms?published=eq.true&select=term,definition,category&order=term.asc&limit=200"),
     ]);
     return { courses, faqs, services, consultations, templates, glossary };
   } catch (error) {
