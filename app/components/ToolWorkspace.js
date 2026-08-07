@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { LMS_FUNCTION, SUPABASE_KEY } from "../lib/tlu";
+import { LMS_FUNCTION } from "../lib/tlu";
 
 const SESSION_KEY = "tlu_session";
-function readSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null")}catch{return null}}
-async function invoke(token,body){const res=await fetch(LMS_FUNCTION,{method:"POST",headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data?.error||"Tool request failed");return data}
+function readSession(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(!s)return null;if(s.refresh_token||(s.access_token&&s.access_token!=="cookie-session")){localStorage.removeItem(SESSION_KEY);return null}return s.authenticated||s.access_token?{authenticated:true,access_token:"cookie-session",user:s.user||null}:null}catch{return null}}
+async function invoke(token,body){const res=await fetch(LMS_FUNCTION,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401){localStorage.removeItem(SESSION_KEY);window.location.href=`/login?next=${encodeURIComponent(window.location.pathname)}`}throw new Error(data?.error||"Tool request failed")}return data}
 function download(name,type,content){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
 function labelize(key){return String(key).replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase())}
 function number(values,key){const value=Number(values[key]||0);return Number.isFinite(value)?value:0}
