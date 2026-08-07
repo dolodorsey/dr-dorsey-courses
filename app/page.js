@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getCatalog, money } from "./lib/tlu";
-import { CheckoutButton } from "./components/StudentActions";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +16,9 @@ export default async function Home() {
 
     <section id="resources" className="section resources"><header className="section-head"><small>RESOURCE VAULT</small><h2>Not PDFs that collect dust.<br/><em>Working operating assets.</em></h2></header><div className="resource-metrics"><div><b>{templates.length || 105}+</b><span>Templates & tools</span></div><div><b>{glossary.length || 30}+</b><span>Operator terms</span></div><div><b>8</b><span>Core guides</span></div><div><b>{faqs.length || 15}+</b><span>Answers</span></div></div><div className="resource-list">{templates.slice(0,12).map(t => <article key={t.slug}><small>{t.category}</small><h3>{t.title}</h3><p>{t.preview_text || t.description}</p><span>{t.access_level === "free" ? "FREE RESOURCE" : "PROGRAM RESOURCE"}</span></article>)}</div></section>
 
-    <section id="consultations" className="section split-section"><header className="section-head"><small>DECIDE IT</small><h2>Get the right brain<br/><em>on the right problem.</em></h2></header><div className="offer-list">{consultations.slice(0,8).map(o => <article key={o.slug}><div><small>{o.offer_kind || "ADVISORY"}</small><h3>{o.name}</h3><p>{o.short_description || `${o.duration_minutes || 60}-minute focused advisory session.`}</p></div><b>{o.price_label || money(o.price_cents)}</b></article>)}</div></section>
+    <section id="consultations" className="section split-section"><header className="section-head"><small>DECIDE IT</small><h2>Get the right brain<br/><em>on the right problem.</em></h2></header><div className="offer-list">{consultations.slice(0,8).map(o => <article key={o.slug}><div><small>{o.offer_kind || "ADVISORY"}</small><h3>{o.name}</h3><p>{o.description || `${o.duration_minutes || 60}-minute focused advisory session.`}</p></div><b>{o.price_label || money(o.price_cents)}</b></article>)}</div></section>
 
-    <section id="services" className="section services"><header className="section-head"><small>BUILD IT</small><h2>You can learn the system.<br/><em>Or hand us the build.</em></h2></header><div className="service-grid">{services.map(s => <article key={s.slug}><small>{s.category}</small><h3>{s.title}</h3><p>{s.short_description || "Done-for-you implementation built from the operating strategy."}</p><div><b>{s.price_label || (s.starting_price_cents ? `From ${money(s.starting_price_cents)}` : "Request scope")}</b><span>{s.turnaround_label || "Scoped delivery"}</span></div></article>)}</div></section>
+    <section id="services" className="section services"><header className="section-head"><small>BUILD IT</small><h2>You can learn the system.<br/><em>Or hand us the build.</em></h2></header><div className="service-grid">{services.map(s => <article key={s.slug}><small>{s.category}</small><h3>{s.title}</h3><p>{s.description || "Done-for-you implementation built from the operating strategy."}</p><div><b>{s.price_label || (s.starting_price_cents ? `From ${money(s.starting_price_cents)}` : "Request scope")}</b><span>{s.turnaround_label || "Scoped delivery"}</span></div></article>)}</div></section>
 
     <section className="section faq"><header className="section-head"><small>FAQ</small><h2>Before you enroll.</h2></header><div>{faqs.slice(0,12).map(f => <details key={f.id || f.question}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</div></section>
 
