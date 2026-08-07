@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   verify:
+    # Keep this as the release gate for the current TLU branch head.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
