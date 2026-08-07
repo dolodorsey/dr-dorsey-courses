@@ -47,4 +47,8 @@ export async function getConsultations() {
   return readTable('tlu_consultation_offers', 'select=slug,name,description,duration_minutes,price_cents,price_label,requires_application,target_customer,transformation_promise,includes,deliverables,preparation_required,capacity_per_week,booking_url,checkout_url,sales_status,offer_kind,billing_period,sort_order&published=eq.true&sales_status=eq.live&order=sort_order.asc')
 }
 
+export async function getMembershipTiers() {
+  return readTable('lu_subscription_tiers', 'select=tier_name,tier_key,monthly_price_cents,annual_price_cents,annual_savings_display,includes,perks,event_discount_pct,merch_discount_pct,consultation_included,consultation_minutes,consultation_frequency,community_access,sort_order,stripe_monthly_price_id,stripe_annual_price_id&status=eq.active&order=sort_order.asc')
+}
+
 export { SUPABASE_URL, SUPABASE_KEY }
