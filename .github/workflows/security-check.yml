@@ -1,0 +1,31 @@
+name: TLU security and build check
+
+on:
+  push:
+    branches:
+      - feat/lifestyle-university-lms
+    paths:
+      - package.json
+      - package-lock.json
+      - .github/workflows/security-check.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Clean install
+        run: npm ci
+      - name: Production build
+        run: npm run build
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
