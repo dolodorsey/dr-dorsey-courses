@@ -36,3 +36,10 @@ export function stageLabel(index) {
 export function playLabel(stage, play) {
   return `STAGE ${String(stage).padStart(2, "0")} · PLAY ${String(play).padStart(2, "0")}`;
 }
+
+export function offerKindLabel(kind) {
+  return ({
+    consultation: "ADVISORY",
+    course_level: "PROGRAM IMMERSION",
+  })[kind] || "STRATEGY ACCESS";
+}
