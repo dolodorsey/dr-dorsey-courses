@@ -4,6 +4,7 @@ import { CheckoutButton } from "../../components/StudentActions";
 import AutoCheckout from "../../components/AutoCheckout";
 import { getCourse, money } from "../../lib/tlu";
 import { LINGO, stageLabel } from "../../lib/lingo";
+import { MEDIA, courseCover, layeredBackground } from "../../lib/media";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function CoursePage({ params, searchParams }) {
     <div className="utility-strip"><span>{course.school_name || "OPERATOR STUDIES"}</span><span>FLAGSHIP PROGRAM</span><span>PROOF-BASED CREDENTIAL</span></div>
     <nav className="nav nav-premium"><Link className="brand" href="/"><b>THE LIFESTYLE</b><span>UNIVERSITY</span></Link><div><Link href="/#programs">Flagships</Link><Link href="/#resources">Tool Vault</Link><Link href="/#consultations">Strategy Room</Link><Link className="console-link" href="/dashboard">Operator Console</Link></div></nav>
 
-    <section className="course-hero course-hero-v2">
+    <section className="course-hero course-hero-v2 media-course-hero" style={layeredBackground(courseCover(course.slug),"linear-gradient(90deg,rgba(5,8,18,.96) 0%,rgba(5,8,18,.82) 50%,rgba(5,8,18,.45) 100%)")}>
       <Link className="back-link" href="/#programs">← FLAGSHIP INDEX</Link>
       <div className="program-badge-row"><span>{course.school_name || "FLAGSHIP PROGRAM"}</span><span>8-STAGE OPERATOR PROGRAM</span></div>
       <h1>{course.title}</h1>
@@ -38,14 +39,18 @@ export default async function CoursePage({ params, searchParams }) {
 
     {outcomes.length ? <section className="section outcomes-section"><header className="section-head section-head-v2"><div><small>OPERATOR OUTCOMES</small><p>What should exist in your business after the program.</p></div><h2>LEAVE WITH<br/><em>PROOF OF WORK.</em></h2></header><div className="outcome-grid outcome-grid-v2">{outcomes.map((o,i)=><article key={i}><span>{String(i+1).padStart(2,"0")}</span><p>{o}</p></article>)}</div></section> : null}
 
+    <section className="stage-gate-band" style={layeredBackground(MEDIA.stageGate,"linear-gradient(90deg,rgba(6,9,20,.92),rgba(6,9,20,.56))")}><div><small>THE STAGE GATE</small><h2>ADVANCE WHEN<br/>THE STANDARD IS MET.</h2><p>Knowledge gets reviewed. Proof gets approved. Readiness unlocks the next Stage.</p></div></section>
+
     <section className="section curriculum curriculum-v2"><header className="section-head section-head-v2"><div><small>THE OPERATOR CURRICULUM</small><p>Eight Stages. Thirty-two Plays. No filler units.</p></div><h2>BUILD IN<br/><em>SEQUENCE.</em></h2></header><div className="module-grid module-grid-v2">{curriculum.map((m,i)=><article key={i}><div className="module-number">{stageLabel(i+1)}</div><div className="stage-status">4 PLAYS · 1 GATE</div><h3>{m.title || `Stage ${i+1}`}</h3><p>{m.description || m.outcome || "Install the next layer of the operating system."}</p><ol>{(m.lessons || []).map((l,j)=><li key={j}><span>PLAY {String(j+1).padStart(2,"0")}</span><b>{typeof l === "string" ? l : l.title}</b></li>)}</ol><small>STAGE EXIT: COMPLETE THE GATE</small></article>)}</div></section>
 
-    {bonuses.length ? <section className="section toolkit toolkit-v2"><header className="section-head section-head-v2"><div><small>{LINGO.resources.toUpperCase()}</small><p>Templates, calculators and working systems attached to the curriculum.</p></div><h2>TAKE THE<br/><em>TOOLS WITH YOU.</em></h2></header><div className="tool-grid tool-grid-v2">{bonuses.map((b,i)=><article key={i}><span>VAULT {String(i+1).padStart(2,"0")}</span><h3>{typeof b === "string" ? b : b.title}</h3><p>Working operator asset with instructions, completion standard and review prompts.</p></article>)}</div></section> : null}
+    {bonuses.length ? <section className="section toolkit toolkit-v2 media-section" style={layeredBackground(MEDIA.toolVault,"linear-gradient(90deg,rgba(7,7,7,.96),rgba(7,7,7,.78))")}><header className="section-head section-head-v2"><div><small>{LINGO.resources.toUpperCase()}</small><p>Templates, calculators and working systems attached to the curriculum.</p></div><h2>TAKE THE<br/><em>TOOLS WITH YOU.</em></h2></header><div className="tool-grid tool-grid-v2">{bonuses.map((b,i)=><article key={i}><span>VAULT {String(i+1).padStart(2,"0")}</span><h3>{typeof b === "string" ? b : b.title}</h3><p>Working operator asset with instructions, completion standard and review prompts.</p></article>)}</div></section> : null}
 
-    <section className="section capstone capstone-v2"><div><small>THE PROOF BUILD</small><h2>CREDENTIALS REQUIRE<br/><em>EVIDENCE.</em></h2><p>Complete all 32 Plays, clear the eight Stage Gates, and submit the final Proof Build. Your Operator Credential unlocks only when the work meets the program standard.</p><div className="credential-chain"><span>32 PLAYS</span><i>→</i><span>8 GATES</span><i>→</i><span>PROOF BUILD</span><i>→</i><span>OPERATOR CREDENTIAL</span></div></div><div className="capstone-score"><b>{course.completion_threshold || 80}%</b><span>MINIMUM PROOF STANDARD</span></div></section>
+    <section className="section capstone capstone-v2 media-capstone" style={layeredBackground(MEDIA.proofBuild,"linear-gradient(90deg,rgba(7,7,7,.96),rgba(7,7,7,.72))")}><div><small>THE PROOF BUILD</small><h2>CREDENTIALS REQUIRE<br/><em>EVIDENCE.</em></h2><p>Complete all 32 Plays, clear the eight Stage Gates, and submit the final Proof Build. Your Operator Credential unlocks only when the work meets the program standard.</p><div className="credential-chain"><span>32 PLAYS</span><i>→</i><span>8 GATES</span><i>→</i><span>PROOF BUILD</span><i>→</i><span>OPERATOR CREDENTIAL</span></div></div><div className="capstone-score"><b>{course.completion_threshold || 80}%</b><span>MINIMUM PROOF STANDARD</span></div></section>
+
+    <section className="credential-band" style={layeredBackground(MEDIA.operatorCredential,"linear-gradient(90deg,rgba(5,8,18,.94),rgba(5,8,18,.56))")}><div><small>OPERATOR CREDENTIAL</small><h2>PROOF EARNS<br/>THE RECOGNITION.</h2><p>Completion is not attendance. The credential represents reviewed execution.</p></div></section>
 
     {faqs.length ? <section className="section faq faq-v2"><header className="section-head section-head-v2"><div><small>BEFORE YOU ENTER</small><p>Program access, expectations and operating standard.</p></div><h2>KNOW THE PROGRAM.<br/><em>THEN COMMIT.</em></h2></header><div>{faqs.map((f,i)=><details key={i}><summary><span>{String(i+1).padStart(2,"0")}</span>{f.question || f.q}</summary><p>{f.answer || f.a}</p></details>)}</div></section> : null}
 
-    <section className="closing closing-v2"><small>{course.title}</small><h2>YOUR NEXT MOVE<br/><em>SHOULD CREATE LEVERAGE.</em></h2><p>Unlock the program, enter Stage 01 and finish the first Build before you consume anything else.</p><CheckoutButton productSlug={productSlug} label={`Unlock ${course.title}`} /></section>
+    <section className="closing closing-v2 media-closing" style={layeredBackground(MEDIA.completionCard,"linear-gradient(180deg,rgba(7,7,7,.62),rgba(7,7,7,.96))")}><small>{course.title}</small><h2>YOUR NEXT MOVE<br/><em>SHOULD CREATE LEVERAGE.</em></h2><p>Unlock the program, enter Stage 01 and finish the first Build before you consume anything else.</p><CheckoutButton productSlug={productSlug} label={`Unlock ${course.title}`} /></section>
   </main>;
 }
