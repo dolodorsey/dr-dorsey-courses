@@ -2,6 +2,7 @@ import './globals.css'
 import './premium.css'
 import './platform.css'
 import './ops-v3.css'
+import './media.css'
 
 export const metadata = {
   title: 'The Lifestyle University | Operator Education',
