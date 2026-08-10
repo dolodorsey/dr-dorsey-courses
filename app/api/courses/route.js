@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server'
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dzlmtvodpyhetvektfuo.supabase.co'
-const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
+const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_ekvoOK6QQ05dUZuWgzQfUw_2RgbWPFR'
 
 export async function GET() {
-  if (!SUPABASE_KEY) {
-    return NextResponse.json({ error: 'Course catalog is not configured.' }, { status: 503 })
-  }
-
   const fields = [
     'slug','title','subtitle','description','school_name','cover_url','duration_minutes',
     'lesson_count','price_cents','price_label','certificate_enabled','published','featured',
