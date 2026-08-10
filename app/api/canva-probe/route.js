@@ -2,20 +2,23 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const DRIVE_VIEW = "https://drive.google.com/file/d/15Y8QEpSLe6redtaf1aDL1gQ8NwYPQHUw/view?usp=drivesdk";
-const DRIVE_DOWNLOAD = "https://drive.usercontent.google.com/download?id=15Y8QEpSLe6redtaf1aDL1gQ8NwYPQHUw&export=download";
-const DRIVE_UC = "https://drive.google.com/uc?export=download&id=15Y8QEpSLe6redtaf1aDL1gQ8NwYPQHUw";
+const URI = encodeURIComponent("ifs://M/c9721270-d114-4455-8cd0-039e38031de6");
+const URLS = {
+  raw1200: `https://media.canva.com/v2/image-resize/format:WEBP/quality:85/uri:${URI}/width:1200`,
+  raw1672: `https://media.canva.com/v2/image-resize/format:PNG/quality:100/uri:${URI}/width:1672`,
+  rawNoResize: `https://media.canva.com/v2/image-resize/format:PNG/quality:100/uri:${URI}`,
+};
 
 async function inspect(url) {
   try {
     const r = await fetch(url, { cache: "no-store", redirect: "follow" });
     const buf = await r.arrayBuffer();
-    return { status: r.status, ok: r.ok, bytes: buf.byteLength, type: r.headers.get("content-type"), finalUrl: r.url };
+    return { status: r.status, ok: r.ok, bytes: buf.byteLength, type: r.headers.get("content-type"), sample: new TextDecoder().decode(buf.slice(0,80)) };
   } catch (error) {
     return { ok: false, error: String(error) };
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ view: await inspect(DRIVE_VIEW), download: await inspect(DRIVE_DOWNLOAD), uc: await inspect(DRIVE_UC) });
+  return NextResponse.json({ raw1200: await inspect(URLS.raw1200), raw1672: await inspect(URLS.raw1672), rawNoResize: await inspect(URLS.rawNoResize) });
 }
