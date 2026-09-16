@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "qa:contract": "node scripts/tlu-contract-check.mjs",
+    "qa:production": "node scripts/tlu-production-smoke.mjs"
   },
   "dependencies": {
     "next": "16.3.0",
