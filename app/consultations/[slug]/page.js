@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ConsultationActions } from "../../components/ConsultationActions";
-import { getConsultation, money } from "../../lib/tlu";
+import HakunaMethodBlock from "../../components/HakunaMethodBlock";
+import { getConsultation, getHakunaBridge, money } from "../../lib/tlu";
 import "../consultations.module.css";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,10 @@ const PRODUCT_BY_OFFER = {
 export default async function ConsultationPage({params,searchParams}){
   const route=await params;
   const query=await searchParams;
-  const offer=await getConsultation(route.slug);
+  const [offer,hakunaBridge]=await Promise.all([
+    getConsultation(route.slug),
+    getHakunaBridge("consultation",route.slug),
+  ]);
   if(!offer)notFound();
   const productSlug=PRODUCT_BY_OFFER[offer.slug];
   const includes=Array.isArray(offer.includes)?offer.includes:[];
@@ -36,6 +40,7 @@ export default async function ConsultationPage({params,searchParams}){
       <div><div className="consultation-kicker">{offer.offer_kind?.replaceAll("_"," ")||"ADVISORY"}</div><h1>{offer.name}</h1><p className="consultation-hero-copy">{offer.transformation_promise||offer.description}</p></div>
       <div className="consultation-investment"><small>{offer.requires_application?"ENGAGEMENT TARGET":"DIRECT ACCESS"}</small><b>{offer.price_label||money(offer.price_cents)}</b><span>{offer.duration_minutes>=1440?"Extended advisory engagement":`${offer.duration_minutes||60} minutes`}</span><span>{offer.requires_application?`Approval unlocks a ${money(offer.deposit_cents)} deposit checkout.`:"Payment confirms the engagement and opens scheduling handoff."}</span></div>
     </section>
+    <HakunaMethodBlock bridge={hakunaBridge} context="consultation" />
     <section className="consultation-body">
       <div>
         <div className="consult-section"><small>BUILT FOR</small><h2>{offer.target_customer||"Operators facing a high-cost decision, bottleneck or growth opportunity."}</h2><p>{offer.description}</p></div>
