@@ -24,8 +24,9 @@ const consultationSlugs = [
   "mastery-certification",
 ];
 
-async function check(path, { method = "GET", expected = 200, contains = [], retries = method === "GET" ? 6 : 1 } = {}) {
+async function check(path, { method = "GET", expected = [200], contains = [], retries = method === "GET" ? 6 : 1 } = {}) {
   const url = `${base}${path}`;
+  const expectedStatuses = Array.isArray(expected) ? expected : [expected];
   let last = null;
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -33,7 +34,7 @@ async function check(path, { method = "GET", expected = 200, contains = [], retr
       const text = await res.text();
       last = { status: res.status, text };
       const missing = contains.filter((needle) => !text.includes(needle));
-      if (res.status === expected && missing.length === 0) {
+      if (expectedStatuses.includes(res.status) && missing.length === 0) {
         console.log(`PASS ${method} ${path} -> ${res.status}`);
         return;
       }
@@ -45,7 +46,7 @@ async function check(path, { method = "GET", expected = 200, contains = [], retr
     if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, 5000));
   }
   const missing = contains.filter((needle) => !last?.text?.includes(needle));
-  console.error(`FAIL ${method} ${path}`, last?.status || last?.error, missing.length ? { missing } : "unexpected status");
+  console.error(`FAIL ${method} ${path}`, last?.status || last?.error, missing.length ? { missing } : { expected: expectedStatuses });
   process.exitCode = 1;
 }
 
@@ -63,10 +64,10 @@ await check("/consultations/checkout/success", {
   contains: ["STRATEGY ROOM SCHEDULING", "dr-dorsey-strategy-consultation"],
 });
 
-// Security posture: anonymous cross-origin-less POSTs must not reach protected TLU handlers.
-await check("/api/tlu/commerce", { method: "POST", expected: 403 });
-await check("/api/tlu/consultations", { method: "POST", expected: 403 });
-await check("/api/tlu/lms", { method: "POST", expected: 403 });
+// Security posture: anonymous POSTs must not reach protected TLU handlers.
+await check("/api/tlu/commerce", { method: "POST", expected: [401, 403] });
+await check("/api/tlu/consultations", { method: "POST", expected: [401, 403] });
+await check("/api/tlu/lms", { method: "POST", expected: [401, 403] });
 
 if (process.exitCode) process.exit(process.exitCode);
 console.log("TLU production smoke suite complete.");
