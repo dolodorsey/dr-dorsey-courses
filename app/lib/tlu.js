@@ -47,6 +47,16 @@ export async function getConsultation(slug) {
   return rows?.[0] || null;
 }
 
+export async function getHakunaBridge(targetType, targetSlug) {
+  try {
+    const rows = await supabaseRest(`tlu_hakuna_bridges?active=eq.true&target_type=eq.${encodeURIComponent(targetType)}&target_slug=eq.${encodeURIComponent(targetSlug)}&select=target_type,target_slug,integration_role,requirement_level,method_slug,book_slug,prework_prompt,completion_prompt,sales_copy,purchase_url,format_priority&limit=1`);
+    return Array.isArray(rows) ? rows[0] || null : null;
+  } catch (error) {
+    console.error("Hakuna bridge load failed", error);
+    return null;
+  }
+}
+
 export async function getConsultationProduct(offerSlug) {
   const rows = await supabaseRest(`tlu_products?published=eq.true&product_kind=eq.consultation&metadata->>consultation_offer_slug=eq.${encodeURIComponent(offerSlug)}&select=slug,name,price_cents,metadata&limit=1`);
   return rows?.[0] || null;
