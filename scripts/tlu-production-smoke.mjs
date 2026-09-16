@@ -24,46 +24,49 @@ const consultationSlugs = [
   "mastery-certification",
 ];
 
-async function fetchWithRetry(path, { method = "GET", expected = 200, contains = [] } = {}) {
+async function check(path, { method = "GET", expected = 200, contains = [], retries = method === "GET" ? 6 : 1 } = {}) {
   const url = `${base}${path}`;
   let last = null;
-  for (let attempt = 1; attempt <= 12; attempt++) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url, { method, redirect: "follow" });
       const text = await res.text();
       last = { status: res.status, text };
-      const bodyOk = contains.every((needle) => text.includes(needle));
-      if (res.status === expected && bodyOk) {
+      const missing = contains.filter((needle) => !text.includes(needle));
+      if (res.status === expected && missing.length === 0) {
         console.log(`PASS ${method} ${path} -> ${res.status}`);
         return;
       }
+      if (method !== "GET") break;
     } catch (error) {
-      last = { error: error.message };
+      last = { error: error.message, text: "" };
+      if (method !== "GET") break;
     }
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, 5000));
   }
-  console.error(`FAIL ${method} ${path}`, last?.status || last?.error, contains.filter((needle) => !last?.text?.includes(needle)));
+  const missing = contains.filter((needle) => !last?.text?.includes(needle));
+  console.error(`FAIL ${method} ${path}`, last?.status || last?.error, missing.length ? { missing } : "unexpected status");
   process.exitCode = 1;
 }
 
-await fetchWithRetry("/", { contains: ["THE LIFESTYLE", "UNIVERSITY"] });
+await check("/", { contains: ["THE LIFESTYLE", "UNIVERSITY"] });
 
 for (const slug of courseSlugs) {
-  await fetchWithRetry(`/courses/${slug}`, { contains: ["32", "Hakuna Matata", "PROOF BUILD"] });
+  await check(`/courses/${slug}`, { contains: ["32", "Hakuna Matata", "PROOF BUILD"] });
 }
 
 for (const slug of consultationSlugs) {
-  await fetchWithRetry(`/consultations/${slug}`, { contains: ["STRATEGY ROOM", "Hakuna Matata"] });
+  await check(`/consultations/${slug}`, { contains: ["STRATEGY ROOM", "Hakuna Matata"] });
 }
 
-await fetchWithRetry("/consultations/checkout/success", {
+await check("/consultations/checkout/success", {
   contains: ["STRATEGY ROOM SCHEDULING", "dr-dorsey-strategy-consultation"],
 });
 
-// Security posture: anonymous cross-origin-less POSTs must not reach commerce.
-await fetchWithRetry("/api/tlu/commerce", { method: "POST", expected: 403 });
-await fetchWithRetry("/api/tlu/consultations", { method: "POST", expected: 403 });
-await fetchWithRetry("/api/tlu/lms", { method: "POST", expected: 403 });
+// Security posture: anonymous cross-origin-less POSTs must not reach protected TLU handlers.
+await check("/api/tlu/commerce", { method: "POST", expected: 403 });
+await check("/api/tlu/consultations", { method: "POST", expected: 403 });
+await check("/api/tlu/lms", { method: "POST", expected: 403 });
 
 if (process.exitCode) process.exit(process.exitCode);
 console.log("TLU production smoke suite complete.");
