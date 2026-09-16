@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckoutButton } from "../../components/StudentActions";
 import AutoCheckout from "../../components/AutoCheckout";
-import { getCourse, money } from "../../lib/tlu";
+import HakunaMethodBlock from "../../components/HakunaMethodBlock";
+import { getCourse, getHakunaBridge, money } from "../../lib/tlu";
 import { LINGO, stageLabel } from "../../lib/lingo";
 import { MEDIA, courseCover, layeredBackground } from "../../lib/media";
 
@@ -11,7 +12,10 @@ export const dynamic = "force-dynamic";
 export default async function CoursePage({ params, searchParams }) {
   const route = await params;
   const query = await searchParams;
-  const course = await getCourse(route.slug);
+  const [course, hakunaBridge] = await Promise.all([
+    getCourse(route.slug),
+    getHakunaBridge("course", route.slug),
+  ]);
   if (!course) notFound();
   const productSlug = `course-${course.slug}`;
   const resumeCheckout = query?.product === productSlug;
@@ -38,6 +42,8 @@ export default async function CoursePage({ params, searchParams }) {
     <section className="section course-intro course-intro-v2"><div><small>BUILT FOR</small><h2>{course.target_customer || "Operators ready to convert knowledge into execution."}</h2></div><div><small>WHAT CHANGES</small><p>{course.transformation_promise || course.description}</p></div></section>
 
     {outcomes.length ? <section className="section outcomes-section"><header className="section-head section-head-v2"><div><small>OPERATOR OUTCOMES</small><p>What should exist in your business after the program.</p></div><h2>LEAVE WITH<br/><em>PROOF OF WORK.</em></h2></header><div className="outcome-grid outcome-grid-v2">{outcomes.map((o,i)=><article key={i}><span>{String(i+1).padStart(2,"0")}</span><p>{o}</p></article>)}</div></section> : null}
+
+    <HakunaMethodBlock bridge={hakunaBridge} context="course" />
 
     <section className="stage-gate-band" style={layeredBackground(MEDIA.stageGate,"linear-gradient(90deg,rgba(6,9,20,.92),rgba(6,9,20,.56))")}><div><small>THE STAGE GATE</small><h2>ADVANCE WHEN<br/>THE STANDARD IS MET.</h2><p>Knowledge gets reviewed. Proof gets approved. Readiness unlocks the next Stage.</p></div></section>
 
