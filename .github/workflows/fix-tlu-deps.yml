@@ -1,0 +1,55 @@
+name: TLU dependency repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fix-tlu-deps.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Upgrade Next and repair lockfile
+        run: |
+          npm install next@16.3.5 --save-exact --package-lock-only
+          npm audit fix --package-lock-only
+
+      - name: Verify clean install
+        run: npm ci
+
+      - name: Verify production audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Verify TLU contracts
+        run: npm run qa:contract
+
+      - name: Verify production build
+        run: npm run build
+
+      - name: Commit repaired dependency graph
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes required."
+            exit 0
+          fi
+          git config user.name "TLU Release Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "Patch TLU production dependencies"
+          git push origin HEAD:main
