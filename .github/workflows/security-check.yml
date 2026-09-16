@@ -1,33 +1,59 @@
-name: TLU security and build check
+name: TLU release gate
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/lifestyle-university-lms
+  pull_request:
+    branches: [main]
     paths:
-      - package.json
-      - package-lock.json
-      - .github/workflows/security-check.yml
+      - "app/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/security-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/security-check.yml"
 
 permissions:
   contents: read
 
+concurrency:
+  group: tlu-release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
-    # Keep this as the release gate for the current TLU branch head.
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - name: Clean install
         run: npm ci
+
+      - name: Contract checks
+        run: npm run qa:contract
+
       - name: Production build
         run: npm run build
+
       - name: Production dependency audit
         run: npm audit --omit=dev --audit-level=high
+
+      - name: Production smoke checks
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          TLU_PRODUCTION_URL: https://youtube-university.vercel.app
+        run: npm run qa:production
