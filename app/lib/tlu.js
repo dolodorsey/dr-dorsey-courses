@@ -2,9 +2,11 @@ export const SUPABASE_URL = "https://dzlmtvodpyhetvektfuo.supabase.co";
 export const SUPABASE_KEY = "sb_publishable_ekvoOK6QQ05dUZuWgzQfUw_2RgbWPFR";
 export const LMS_EDGE_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-lms`;
 export const COMMERCE_EDGE_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-commerce`;
+export const CONSULTATIONS_EDGE_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-consultations`;
 export const CREDENTIAL_FUNCTION = `${SUPABASE_URL}/functions/v1/tlu-credential`;
 export const LMS_FUNCTION = "/api/tlu/lms";
 export const COMMERCE_FUNCTION = "/api/tlu/commerce";
+export const CONSULTATIONS_FUNCTION = "/api/tlu/consultations";
 
 const baseHeaders = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
 
@@ -24,7 +26,7 @@ export async function getCatalog() {
       supabaseRest("tlu_courses?brand_key=eq.the_lifestyle_university&published=eq.true&select=id,slug,title,subtitle,description,school_name,target_customer,transformation_promise,learning_outcomes,prerequisites,price_cents,price_label,lesson_count,featured,sort_order,curriculum_json,bonuses,course_faq&order=sort_order.asc"),
       supabaseRest("tlu_faqs?published=eq.true&select=*&order=sort_order.asc"),
       supabaseRest("tlu_service_offers?active=eq.true&select=slug,title,category,description,starting_price_cents,price_label,turnaround_label,sort_order&order=sort_order.asc"),
-      supabaseRest("tlu_consultation_offers?published=eq.true&select=slug,name,offer_kind,duration_minutes,price_cents,price_label,description,sort_order&order=sort_order.asc"),
+      supabaseRest("tlu_consultation_offers?published=eq.true&select=slug,name,offer_kind,duration_minutes,price_cents,deposit_cents,price_label,description,requires_application,target_customer,transformation_promise,includes,deliverables,preparation_required,minimum_qualification_score,capacity_per_week,checkout_url,booking_url,sales_status,sort_order&order=sort_order.asc"),
       supabaseRest("tlu_templates?published=eq.true&select=slug,title,description,category,file_type,tool_kind,tags,featured,downloadable,access_level,course_slug,preview_text,sort_order&order=featured.desc,sort_order.asc,title.asc&limit=200"),
       supabaseRest("tlu_glossary_terms?published=eq.true&select=term,definition,category&order=term.asc&limit=200"),
     ]);
@@ -37,6 +39,16 @@ export async function getCatalog() {
 
 export async function getCourse(slug) {
   const rows = await supabaseRest(`tlu_courses?brand_key=eq.the_lifestyle_university&published=eq.true&slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`);
+  return rows?.[0] || null;
+}
+
+export async function getConsultation(slug) {
+  const rows = await supabaseRest(`tlu_consultation_offers?published=eq.true&slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`);
+  return rows?.[0] || null;
+}
+
+export async function getConsultationProduct(offerSlug) {
+  const rows = await supabaseRest(`tlu_products?published=eq.true&product_kind=eq.consultation&metadata->>consultation_offer_slug=eq.${encodeURIComponent(offerSlug)}&select=slug,name,price_cents,metadata&limit=1`);
   return rows?.[0] || null;
 }
 
